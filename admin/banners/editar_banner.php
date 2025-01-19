@@ -5,10 +5,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit;
 }
 
-// Definir o caminho correto para buscar.php
-$caminho = __DIR__ . '/../admin/controllers/banner/buscar.php';
-// Definir o caminho correto para editar.php
-$caminho = __DIR__ . '/../admin/controllers/banner/editar.php';
+require_once __DIR__ . '/../controllers/banner/buscar.php';
+require_once __DIR__ . '/../controllers/banner/editar.php';
+
 
 if (!isset($_GET['id'])) {
     header('Location: banners.php');
