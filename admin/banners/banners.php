@@ -4,16 +4,8 @@ if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: ../../login.php');
     exit;
 }
-
-// Caminho correto para buscar.php
 require_once __DIR__ . '/../controllers/banner/buscar.php';
 
-
-if (!file_exists($caminho)) {
-    die("O arquivo não existe no caminho: $caminho");
-}
-
-require_once $caminho;
 
 // Chamar a função para buscar os banners
 $banners = buscarBanners();
@@ -53,14 +45,16 @@ $banners = buscarBanners();
         <tbody>
             <?php foreach ($banners as $banner): ?>
             <tr>
-                <td><?= $banner['id'] ?></td>
+                <td><?= htmlspecialchars($banner['id']) ?></td>
                 <td><?= htmlspecialchars($banner['titulo']) ?></td>
                 <td>
                     <img src="<?= htmlspecialchars($banner['imagem']) ?>" alt="<?= htmlspecialchars($banner['titulo']) ?>" width="100">
                 </td>
                 <td>
                     <a href="editar_banner.php?id=<?= $banner['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="../controllers/banner/excluir.php?id=<?= $banner['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Deseja realmente excluir este banner?')">Excluir</a>
+                    <a href="../controllers/banner/excluir.php?id=<?= $banner['id'] ?>" 
+                       class="btn btn-danger btn-sm" 
+                       onclick="return confirm('Deseja realmente excluir este banner?')">Excluir</a>
                 </td>
             </tr>
             <?php endforeach; ?>

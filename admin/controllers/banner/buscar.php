@@ -1,5 +1,6 @@
 <?php
-require_once '../conexao/conexao.php';
+include(__DIR__ . '/../../../conexao/conexao.php');
+
 
 function buscarBanners() {
     global $conexao;
