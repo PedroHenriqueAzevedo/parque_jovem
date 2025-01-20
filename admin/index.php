@@ -27,7 +27,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
         <a href="sabatina/listar.php" class="btn btn-success btn-lg">
             <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
         </a>
-        <a href="../logout.php" class="btn btn-danger btn-lg">
+        <a href="../admin/logout.php" class="btn btn-danger btn-lg">
             <i class="bi bi-box-arrow-right"></i> Sair
         </a>
     </div>
