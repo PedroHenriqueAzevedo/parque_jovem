@@ -4,8 +4,16 @@ if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: ../../login.php');
     exit;
 }
+
+// Incluir os arquivos necessários
 require_once __DIR__ . '/../controllers/banner/buscar.php';
 
+// Verificar se há uma mensagem de exclusão na sessão
+$mensagem = '';
+if (isset($_SESSION['mensagem_exclusao'])) {
+    $mensagem = $_SESSION['mensagem_exclusao'];
+    unset($_SESSION['mensagem_exclusao']);
+}
 
 // Chamar a função para buscar os banners
 $banners = buscarBanners();
@@ -33,6 +41,13 @@ $banners = buscarBanners();
 
     <h1 class="text-center">Gerenciar Banners</h1>
 
+    <?php if ($mensagem): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($mensagem) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <table class="table table-striped mt-3">
         <thead>
             <tr>
@@ -44,7 +59,7 @@ $banners = buscarBanners();
         </thead>
         <tbody>
             <?php foreach ($banners as $banner): ?>
-            <tr>
+            <tr id="banner-<?= $banner['id'] ?>">
                 <td><?= htmlspecialchars($banner['id']) ?></td>
                 <td><?= htmlspecialchars($banner['titulo']) ?></td>
                 <td>
@@ -52,15 +67,40 @@ $banners = buscarBanners();
                 </td>
                 <td>
                     <a href="editar_banner.php?id=<?= $banner['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="../controllers/banner/excluir.php?id=<?= $banner['id'] ?>" 
-                       class="btn btn-danger btn-sm" 
-                       onclick="return confirm('Deseja realmente excluir este banner?')">Excluir</a>
+                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $banner['id'] ?>)">Excluir</a>
                 </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </div>
+
+<script>
+    function confirmDelete(id) {
+        if (confirm('Deseja realmente excluir este banner?')) {
+            fetch(`../controllers/banner/excluir.php?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                        alertDiv.role = 'alert';
+                        alertDiv.innerHTML = `${data.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
+                        document.querySelector('.container').prepend(alertDiv);
+
+                        document.getElementById(`banner-${id}`).remove();
+                    } else {
+                        alert('Erro: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro ao tentar excluir o banner.');
+                });
+        }
+    }
+</script>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -24,6 +24,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
         <a href="banners/banners.php" class="btn btn-primary btn-lg">
             <i class="bi bi-card-image"></i> Gerenciar Banners
         </a>
+        <a href="sabatina/listar.php" class="btn btn-success btn-lg">
+            <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
+        </a>
         <a href="../logout.php" class="btn btn-danger btn-lg">
             <i class="bi bi-box-arrow-right"></i> Sair
         </a>

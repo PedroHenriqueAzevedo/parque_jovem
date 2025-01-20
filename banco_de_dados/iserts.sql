@@ -1,0 +1,6 @@
+CREATE TABLE escola_sabatina (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    arquivo VARCHAR(255) NOT NULL,
+    data_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
