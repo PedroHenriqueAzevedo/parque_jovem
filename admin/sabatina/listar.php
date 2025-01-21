@@ -24,7 +24,7 @@ $arquivos = buscarArquivosSabatina();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Escola Sabatina - Parque Joven</title>
+    <title>Gerenciar Escola Sabatina</title>
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
@@ -63,7 +63,7 @@ $arquivos = buscarArquivosSabatina();
                 <td><?= htmlspecialchars($arquivo['id']) ?></td>
                 <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
                 <td>
-                    <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
+                    <a href="../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
                 </td>
                 <td>
                     <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
@@ -78,7 +78,7 @@ $arquivos = buscarArquivosSabatina();
 <script>
     function confirmDelete(id) {
         if (confirm('Deseja realmente excluir este arquivo?')) {
-            fetch(`../controllers/sabatina/excluir_sabatina.php?id=${id}`)
+            fetch(`../controllers/sabatina/excluir.php?id=${id}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

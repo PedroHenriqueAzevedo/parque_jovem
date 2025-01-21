@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 header('Content-Type: application/json');
 
 include(__DIR__ . '/../../../conexao/conexao.php');
@@ -12,9 +11,11 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = $_GET['id'];
 
     try {
-        $arquivo = buscarArquivoSabatinaPorId($id);
-        if ($arquivo && file_exists($arquivo['arquivo'])) {
-            unlink($arquivo['arquivo']);
+        $arquivo = buscarArquivosSabatina($id);
+        $caminhoArquivo = __DIR__ . '/../../../uploads/' . $arquivo['arquivo'];
+
+        if ($arquivo && file_exists($caminhoArquivo)) {
+            unlink($caminhoArquivo);
         }
 
         $stmt = $conexao->prepare("DELETE FROM escola_sabatina WHERE id = :id");
