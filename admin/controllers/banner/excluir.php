@@ -12,11 +12,21 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = $_GET['id'];
 
     try {
+        // Buscar os detalhes do banner pelo ID
         $banner = buscarBannerPorId($id);
-        if ($banner && file_exists($banner['imagem'])) {
-            unlink($banner['imagem']);
+
+        // Caminho correto da pasta de uploads sem "parque_joven"
+        $uploadDir = __DIR__ . '/../../../uploads/';
+
+        // Verificar se a imagem existe e excluir
+        if ($banner && isset($banner['imagem'])) {
+            $imagePath = $uploadDir . basename($banner['imagem']);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
         }
 
+        // Excluir o registro do banco de dados
         $stmt = $conexao->prepare("DELETE FROM banners WHERE id = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();

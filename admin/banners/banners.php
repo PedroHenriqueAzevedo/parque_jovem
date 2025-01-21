@@ -1,5 +1,9 @@
 <?php
-session_start();
+// Verifica se a sessão já está iniciada antes de chamar session_start
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($_SESSION['admin_logged_in'])) {
     header('Location: ../../login.php');
     exit;
@@ -8,11 +12,16 @@ if (!isset($_SESSION['admin_logged_in'])) {
 // Incluir os arquivos necessários
 require_once __DIR__ . '/../controllers/banner/buscar.php';
 
-// Verificar se há uma mensagem de exclusão na sessão
+// Verificar se há mensagens de sucesso ou exclusão na sessão
 $mensagem = '';
 if (isset($_SESSION['mensagem_exclusao'])) {
     $mensagem = $_SESSION['mensagem_exclusao'];
     unset($_SESSION['mensagem_exclusao']);
+}
+
+if (isset($_SESSION['mensagem_sucesso'])) {
+    $mensagem = $_SESSION['mensagem_sucesso'];
+    unset($_SESSION['mensagem_sucesso']);
 }
 
 // Chamar a função para buscar os banners
@@ -63,7 +72,7 @@ $banners = buscarBanners();
                 <td><?= htmlspecialchars($banner['id']) ?></td>
                 <td><?= htmlspecialchars($banner['titulo']) ?></td>
                 <td>
-                    <img src="<?= htmlspecialchars($banner['imagem']) ?>" alt="<?= htmlspecialchars($banner['titulo']) ?>" width="100">
+                    <img src="../../uploads/<?= htmlspecialchars($banner['imagem']) ?>" alt="<?= htmlspecialchars($banner['titulo']) ?>" width="100">
                 </td>
                 <td>
                     <a href="editar_banner.php?id=<?= $banner['id'] ?>" class="btn btn-warning btn-sm">Editar</a>

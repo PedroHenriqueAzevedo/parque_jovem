@@ -16,7 +16,9 @@ function adicionarBanner($dados, $arquivos) {
         mkdir($pastaDestino, 0755, true);
     }
 
-    $caminhoImagem = $pastaDestino . basename($imagem['name']);
+    $nomeArquivo = basename($imagem['name']);
+    $caminhoImagem = $pastaDestino . $nomeArquivo;
+    
     if (!move_uploaded_file($imagem['tmp_name'], $caminhoImagem)) {
         return ['sucesso' => false, 'erro' => 'Erro ao salvar a imagem no servidor.'];
     }
@@ -24,9 +26,10 @@ function adicionarBanner($dados, $arquivos) {
     try {
         $stmt = $conexao->prepare("INSERT INTO banners (titulo, imagem) VALUES (:titulo, :imagem)");
         $stmt->bindParam(':titulo', $titulo);
-        $stmt->bindParam(':imagem', $caminhoImagem);
+        $stmt->bindParam(':imagem', $nomeArquivo);
         $stmt->execute();
 
+        $_SESSION['mensagem_sucesso'] = "Banner adicionado com sucesso!";
         return ['sucesso' => true];
     } catch (PDOException $e) {
         return ['sucesso' => false, 'erro' => 'Erro ao salvar o banner no banco: ' . $e->getMessage()];
