@@ -8,10 +8,17 @@ if (!isset($_SESSION['admin_logged_in'])) {
 // Incluir os arquivos necessários
 require_once __DIR__ . '/../controllers/sabatina/buscar_sabatina.php';
 
-// Verificar se há uma mensagem de exclusão na sessão
+// Verificar se há uma mensagem de sucesso na sessão
 $mensagem = '';
+if (isset($_SESSION['mensagem_sucesso'])) {
+    $mensagem = $_SESSION['mensagem_sucesso'];
+    unset($_SESSION['mensagem_sucesso']);
+}
+
+// Verificar se há uma mensagem de exclusão na sessão
+$mensagem_exclusao = '';
 if (isset($_SESSION['mensagem_exclusao'])) {
-    $mensagem = $_SESSION['mensagem_exclusao'];
+    $mensagem_exclusao = $_SESSION['mensagem_exclusao'];
     unset($_SESSION['mensagem_exclusao']);
 }
 
@@ -48,6 +55,13 @@ $arquivos = buscarArquivosSabatina();
         </div>
     <?php endif; ?>
 
+    <?php if ($mensagem_exclusao): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($mensagem_exclusao) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <table class="table table-striped mt-3">
         <thead>
             <tr>
@@ -63,7 +77,7 @@ $arquivos = buscarArquivosSabatina();
                 <td><?= htmlspecialchars($arquivo['id']) ?></td>
                 <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
                 <td>
-                    <a href="../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
+                    <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
                 </td>
                 <td>
                     <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
