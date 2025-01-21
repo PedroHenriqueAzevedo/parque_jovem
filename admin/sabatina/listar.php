@@ -48,6 +48,7 @@ $arquivos = buscarArquivosSabatina();
 
     <h1 class="text-center">Gerenciar Escola Sabatina</h1>
 
+    <!-- Mensagem de Sucesso -->
     <?php if ($mensagem): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= htmlspecialchars($mensagem) ?>
@@ -55,6 +56,7 @@ $arquivos = buscarArquivosSabatina();
         </div>
     <?php endif; ?>
 
+    <!-- Mensagem de exclusão -->
     <?php if ($mensagem_exclusao): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= htmlspecialchars($mensagem_exclusao) ?>

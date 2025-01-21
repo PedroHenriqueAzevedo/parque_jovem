@@ -19,7 +19,8 @@ $arquivo = buscarArquivoSabatinaPorId($id);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado = editarArquivoSabatina($id, $_POST, $_FILES);
     if ($resultado['sucesso']) {
-        header('Location: listar.php?updated=1');
+        $_SESSION['mensagem_sucesso'] = 'Arquivo atualizado com sucesso!';
+        header('Location: listar.php');
         exit;
     } else {
         $erro = $resultado['erro'];
