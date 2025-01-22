@@ -38,58 +38,60 @@ $arquivos = buscarArquivosSabatina();
 <body>
 <?php include '../../cabecalho/header.php'; ?>
 <div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a href="../index.php" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Voltar
-        </a>
-        <a href="adicionar_sabatina.php" class="btn btn-primary">
-            <i class="bi bi-plus"></i> Adicionar Arquivo
-        </a>
+    <div class="card shadow-lg p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="../index.php" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+            <a href="adicionar_sabatina.php" class="btn btn-primary">
+                <i class="bi bi-plus"></i> Adicionar Arquivo
+            </a>
+        </div>
+
+        <h1 class="text-center">Gerenciar Escola Sabatina</h1>
+
+        <!-- Mensagem de Sucesso -->
+        <?php if ($mensagem): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($mensagem) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Mensagem de exclusão -->
+        <?php if ($mensagem_exclusao): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <?= htmlspecialchars($mensagem_exclusao) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <table class="table table-striped mt-3">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Arquivo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($arquivos as $arquivo): ?>
+                <tr id="arquivo-<?= $arquivo['id'] ?>">
+                    <td><?= htmlspecialchars($arquivo['id']) ?></td>
+                    <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
+                    <td>
+                        <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
+                    </td>
+                    <td>
+                        <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
     </div>
-
-    <h1 class="text-center">Gerenciar Escola Sabatina</h1>
-
-    <!-- Mensagem de Sucesso -->
-    <?php if ($mensagem): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= htmlspecialchars($mensagem) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
-
-    <!-- Mensagem de exclusão -->
-    <?php if ($mensagem_exclusao): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= htmlspecialchars($mensagem_exclusao) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    <?php endif; ?>
-
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Título</th>
-                <th>Arquivo</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($arquivos as $arquivo): ?>
-            <tr id="arquivo-<?= $arquivo['id'] ?>">
-                <td><?= htmlspecialchars($arquivo['id']) ?></td>
-                <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
-                <td>
-                    <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
-                </td>
-                <td>
-                    <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
 </div>
 
 <script>

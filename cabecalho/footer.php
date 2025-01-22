@@ -1,11 +1,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 <footer class="bg-dark text-white py-4 mt-auto">
     <div class="container text-center">
-        <p>&copy; <?php echo date('Y'); ?> Meu Site. Todos os direitos reservados.</p>
+        <p>&copy; <?php echo date('Y'); ?> Parque Jovem. Todos os direitos reservados.</p>
         
         <!-- Links para redes sociais -->
         <div class="mt-3">
-            <a href="https://www.instagram.com/seu_perfil" target="_blank" class="text-white mx-2 text-decoration-none">
+            <a href="https://www.instagram.com/parquejovem" target="_blank" class="text-white mx-2 text-decoration-none">
                 <i class="bi bi-instagram" style="font-size: 1.5rem;"></i>
             </a>
             <a href="https://wa.me/seu_numero?text=Olá!" target="_blank" class="text-white mx-2 text-decoration-none">

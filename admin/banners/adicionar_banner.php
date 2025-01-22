@@ -28,24 +28,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Adicionar Banner</h1>
-    <a href="banners.php" class="btn btn-secondary mb-3">Voltar</a>
-
-    <?php if (isset($erro)): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($erro) ?></div>
-    <?php endif; ?>
-
-    <form action="adicionar_banner.php" method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="titulo" class="form-label">Título do Banner:</label>
-            <input type="text" name="titulo" id="titulo" class="form-control" required>
+    <div class="card shadow-lg p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="banners.php" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
         </div>
-        <div class="mb-3">
-            <label for="imagem" class="form-label">Imagem do Banner:</label>
-            <input type="file" name="imagem" id="imagem" class="form-control" accept="image/*" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Salvar</button>
-    </form>
+
+        <h1 class="text-center">Adicionar Banner</h1>
+
+        <?php if (isset($erro)): ?>
+            <div class="alert alert-danger"> <?= htmlspecialchars($erro) ?> </div>
+        <?php endif; ?>
+
+        <form action="adicionar_banner.php" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título do Banner:</label>
+                <input type="text" name="titulo" id="titulo" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="imagem" class="form-label">Imagem do Banner:</label>
+                <input type="file" name="imagem" id="imagem" class="form-control" accept="image/*" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Salvar</button>
+        </form>
+    </div>
 </div>
 <?php include '../../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>

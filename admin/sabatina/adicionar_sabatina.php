@@ -30,26 +30,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include '../../cabecalho/header.php'; ?>
 <body>
 <div class="container mt-5">
-    <h1 class="text-center">Adicionar Arquivo da Escola Sabatina</h1>
-    <a href="listar.php" class="btn btn-secondary mb-3">Voltar</a>
+    <div class="card shadow-lg p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <a href="listar.php" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
-    <?php if (!empty($erro)): ?>
-        <div class="alert alert-danger">
-            <strong>Erro:</strong> <?= htmlspecialchars($erro) ?>
-        </div>
-    <?php endif; ?>
+        <h1 class="text-center">Adicionar Arquivo da Escola Sabatina</h1>
 
-    <form action="adicionar_sabatina.php" method="POST" enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="titulo" class="form-label">Título:</label>
-            <input type="text" name="titulo" id="titulo" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label for="arquivo" class="form-label">Selecionar Arquivo:</label>
-            <input type="file" name="arquivo" id="arquivo" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Salvar</button>
-    </form>
+        <?php if (!empty($erro)): ?>
+            <div class="alert alert-danger">
+                <strong>Erro:</strong> <?= htmlspecialchars($erro) ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="adicionar_sabatina.php" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="titulo" class="form-label">Título:</label>
+                <input type="text" name="titulo" id="titulo" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="arquivo" class="form-label">Selecionar Arquivo:</label>
+                <input type="file" name="arquivo" id="arquivo" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Salvar</button>
+        </form>
+    </div>
 </div>
 <?php include '../../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
