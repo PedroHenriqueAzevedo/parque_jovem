@@ -32,7 +32,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
         </a>
     </div>
 </div>
-<?php include '../cabecalho/footer.php'; ?>
+<?php include '../cabecalho/footer_ad.php'; ?>
 <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

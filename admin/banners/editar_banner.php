@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
-    header('Location: ../../login.php');
+    header('Location: ../../admin/login.php');
     exit;
 }
 
@@ -70,7 +70,7 @@ include '../../cabecalho/header.php';
         </form>
     </div>
 </div>
-<?php include '../../cabecalho/footer.php';?>
+<?php include '../../cabecalho/footer_ad.php';?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
