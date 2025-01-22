@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['admin_email'] = $resultado['usuario']['email'];
 
         // Redirecionar para o painel administrativo
-        header('Location: ../admin/index.php');
+        header('Location: admin/index.php');
         exit;
     } else {
         // Armazenar mensagem de erro na sessão

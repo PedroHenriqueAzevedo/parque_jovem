@@ -15,7 +15,11 @@ function autenticarUsuario($email, $senha) {
             if ($admin['senha'] === $senha) { 
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_nome'] = $admin['nome']; 
-                header('Location: admin/index.php');
+                header('Location: ' . dirname($_SERVER['PHP_SELF']) . '/index.php');
+
+
+
+
                 exit;
             } else {
                 $_SESSION['erro_login'] = 'Senha incorreta.';
