@@ -18,8 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ../admin/index.php');
         exit;
     } else {
-        // Redirecionar para a página de login com mensagem de erro
-        header('Location: ../login.php?erro=' . urlencode($resultado['erro']));
+        // Armazenar mensagem de erro na sessão
+        $_SESSION['erro_login'] = $resultado['erro'];
+
+        // Redirecionar para a página de login sem parâmetros na URL
+        header('Location: ../admin/login.php');
         exit;
     }
 }

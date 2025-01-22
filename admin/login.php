@@ -13,7 +13,6 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Parque Joven</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
@@ -21,11 +20,12 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     <div class="card p-4" style="width: 100%; max-width: 400px;">
         <h2 class="text-center mb-4">Login - Admin</h2>
 
-        <!-- Mensagem de erro -->
-        <?php if (isset($_GET['erro'])): ?>
+        <!-- Mensagem de erro via sessão -->
+        <?php if (isset($_SESSION['erro_login'])): ?>
             <div class="alert alert-danger text-center">
-                <?= htmlspecialchars($_GET['erro']) ?>
+                <?= htmlspecialchars($_SESSION['erro_login']) ?>
             </div>
+            <?php unset($_SESSION['erro_login']); ?>
         <?php endif; ?>
 
         <form action="verifica_login.php" method="POST">
