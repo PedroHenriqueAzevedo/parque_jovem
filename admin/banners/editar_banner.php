@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
 </head>
 <body>
+<?php include '../cabecalho/header.php'; ?>
 <div class="container mt-5">
     <h1 class="text-center">Editar Banner</h1>
     <a href="banners.php" class="btn btn-secondary mb-3">Voltar</a>
@@ -63,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
     </form>
 </div>
+<?php include '../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

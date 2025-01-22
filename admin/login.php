@@ -42,6 +42,4 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     </div>
 </div>
 
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../cabecalho/footer.php'; ?> <!-- Incluindo o footer -->
