@@ -19,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="pt-br">
+<?php include '../../cabecalho/header.php'; ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-primary w-100">Salvar</button>
     </form>
 </div>
+<?php include '../../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

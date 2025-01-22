@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Adicionar Arquivo - Escola Sabatina</title>
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
 </head>
+<?php include '../../cabecalho/header.php'; ?>
 <body>
 <div class="container mt-5">
     <h1 class="text-center">Adicionar Arquivo da Escola Sabatina</h1>
@@ -50,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="btn btn-primary w-100">Salvar</button>
     </form>
 </div>
+<?php include '../../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

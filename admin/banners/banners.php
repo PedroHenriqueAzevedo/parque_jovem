@@ -38,6 +38,7 @@ $banners = buscarBanners();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
+<?php include '../../cabecalho/header.php'; ?>
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <a href="../index.php" class="btn btn-secondary">
@@ -110,6 +111,7 @@ $banners = buscarBanners();
         }
     }
 </script>
+<?php include '../../cabecalho/footer.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

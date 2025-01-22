@@ -6,17 +6,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Parque Joven</title>
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-</head>
-<body>
+
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="card p-4" style="width: 100%; max-width: 400px;">
         <h2 class="text-center mb-4">Login - Admin</h2>
@@ -42,6 +32,4 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     </div>
 </div>
 
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+<?php include '../cabecalho/footer.php'; ?> <!-- Incluindo o footer -->
