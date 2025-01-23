@@ -30,7 +30,7 @@ try {
         <div class="carousel-inner">
             <?php foreach ($banners as $index => $banner): ?>
                 <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                    <img src="/parque_jovem/uploads/<?php echo $banner['imagem']; ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($banner['titulo']); ?>">
+                    <img src="./uploads/<?php echo $banner['imagem']; ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($banner['titulo']); ?>">
                     <div class="carousel-caption d-none d-md-block">
                         <h5><?php echo htmlspecialchars($banner['titulo']); ?></h5>
                     </div>

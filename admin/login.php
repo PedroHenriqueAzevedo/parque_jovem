@@ -5,7 +5,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     exit;
 }
 ?>
-
+<?php include '../cabecalho/header.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -42,4 +42,4 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     </div>
 </div>
 
-<?php include '../cabecalho/footer_ad.php'; ?> <!-- Incluindo o footer -->
+<?php include '../cabecalho/footer_ad.php'; ?>

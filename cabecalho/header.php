@@ -11,10 +11,14 @@
 <header class="bg-dark text-white py-3">
     <div class="container-fluid px-0"> <!-- remove padding lateral -->
         <div class="d-flex justify-content-between align-items-center">
-            <h1 class="h5 mb-0 mx-3">Parque Joven</h1> <!-- Ajuste de margens se necessário -->
+            <a href="index.php" class="d-flex align-items-center mx-3">
+                <img src="/parque_jovem/assets/images/logo.png" alt="Logo Parque Jovem" width="150" height="auto">
+            </a>
             <nav>
+                <!-- Adicione links de navegação aqui -->
             </nav>
         </div>
     </div>
 </header>
-
+</body>
+</html>
