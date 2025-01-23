@@ -1,6 +1,6 @@
 <?php
 // Conexão com o banco de dados
-include '../conexao/conexao.php';
+include './conexao/conexao.php';
 
 // Verifica se a conexão foi estabelecida corretamente
 if (!$conexao) {

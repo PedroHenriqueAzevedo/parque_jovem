@@ -13,9 +13,6 @@
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="h5 mb-0 mx-3">Parque Joven</h1> <!-- Ajuste de margens se necessário -->
             <nav>
-                <a href="index.php" class="text-white text-decoration-none mx-2">Início</a>
-                <a href="sobre.php" class="text-white text-decoration-none mx-2">Sobre</a>
-                <a href="contato.php" class="text-white text-decoration-none mx-2">Contato</a>
             </nav>
         </div>
     </div>
