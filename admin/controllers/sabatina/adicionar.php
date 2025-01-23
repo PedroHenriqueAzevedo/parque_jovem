@@ -47,11 +47,14 @@ function adicionarArquivoEscolaSabatina($dados, $arquivos) {
         return ['sucesso' => false, 'erro' => 'Erro ao salvar o arquivo no servidor. Tente novamente.'];
     }
 
+    // Caminho relativo para salvar no banco de dados
+    $caminhoRelativo = 'uploads/' . $arquivoNome;
+
     try {
-        // Salvar apenas o nome do arquivo no banco de dados
+        // Salvar o caminho completo no banco de dados
         $stmt = $conexao->prepare("INSERT INTO escola_sabatina (titulo, arquivo) VALUES (:titulo, :arquivo)");
         $stmt->bindParam(':titulo', $titulo);
-        $stmt->bindParam(':arquivo', $arquivoNome);
+        $stmt->bindParam(':arquivo', $caminhoRelativo);
         $stmt->execute();
 
         return ['sucesso' => true];

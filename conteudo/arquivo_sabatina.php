@@ -24,7 +24,7 @@ try {
     <h2 class="text-center mb-4">Arquivos da Escola Sabatina</h2>
     <div class="list-group">
         <?php foreach ($result as $row): ?>
-            <a href="<?= dirname($_SERVER['PHP_SELF']) . './uploads/' . htmlspecialchars($row['arquivo']) ?>" 
+            <a href="<?= dirname($_SERVER['PHP_SELF']) . '../' . htmlspecialchars($row['arquivo']) ?>" 
    download 
    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
     <div>

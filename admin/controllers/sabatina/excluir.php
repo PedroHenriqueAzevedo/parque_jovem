@@ -23,12 +23,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Buscar os detalhes do arquivo pelo ID
         $arquivo = buscarArquivoPorId($id);
 
-        // Definir o caminho da pasta de uploads
-        $uploadDir = __DIR__ . '/../../../uploads/';
-
         // Verificar se o arquivo existe e excluí-lo
         if ($arquivo && isset($arquivo['arquivo'])) {
-            $filePath = $uploadDir . basename($arquivo['arquivo']);
+            $filePath = __DIR__ . '/../../../' . $arquivo['arquivo'];
             if (file_exists($filePath)) {
                 unlink($filePath);
             }

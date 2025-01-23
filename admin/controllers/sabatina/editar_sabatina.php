@@ -12,7 +12,7 @@ function editarArquivoSabatina($id, $dados, $arquivos) {
         return ['sucesso' => false, 'erro' => 'O título não pode estar vazio.'];
     }
 
-    // Buscar o nome do arquivo atual para exclusão se necessário
+    // Buscar o caminho completo do arquivo atual para exclusão se necessário
     $stmt = $conexao->prepare("SELECT arquivo FROM escola_sabatina WHERE id = :id");
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
@@ -45,9 +45,11 @@ function editarArquivoSabatina($id, $dados, $arquivos) {
         }
 
         // Excluir o arquivo antigo
-        if ($arquivoAtual && file_exists($pastaDestino . $arquivoAtual)) {
-            unlink($pastaDestino . $arquivoAtual);
+        if ($arquivoAtual && file_exists(__DIR__ . '/../../../' . $arquivoAtual)) {
+            unlink(__DIR__ . '/../../../' . $arquivoAtual);
         }
+
+        $arquivoNome = 'uploads/' . $arquivoNome;
     }
 
     try {
@@ -67,4 +69,3 @@ function editarArquivoSabatina($id, $dados, $arquivos) {
         return ['sucesso' => false, 'erro' => 'Erro ao atualizar arquivo da escola sabatina: ' . $e->getMessage()];
     }
 }
-?>
