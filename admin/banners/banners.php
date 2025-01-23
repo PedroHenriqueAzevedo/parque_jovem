@@ -52,6 +52,8 @@ $banners = buscarBanners();
 
         <h1 class="text-center">Painel de Gerenciamento de Banners</h1>
 
+        <div id="mensagem-exclusao"></div>
+
         <?php if ($mensagem): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <?= htmlspecialchars($mensagem) ?>
@@ -87,31 +89,48 @@ $banners = buscarBanners();
     </div>
 </div>
 
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza de que deseja excluir este banner?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    let deleteId = null;
+
     function confirmDelete(id) {
-        if (confirm('Deseja realmente excluir este banner?')) {
-            fetch(`../controllers/banner/excluir.php?id=${id}`)
+        deleteId = id;
+        var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        confirmDeleteModal.show();
+    }
+
+    document.getElementById('confirmDeleteButton').addEventListener('click', function() {
+        if (deleteId !== null) {
+            fetch(`../controllers/banner/excluir.php?id=${deleteId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const alertDiv = document.createElement('div');
-                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                        alertDiv.role = 'alert';
-                        alertDiv.innerHTML = `${data.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                        document.querySelector('.container').prepend(alertDiv);
-
-                        document.getElementById(`banner-${id}`).remove();
-                    } else {
-                        alert('Erro: ' + data.message);
+                        document.getElementById(`banner-${deleteId}`).remove();
+                        document.getElementById('mensagem-exclusao').innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
                     }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Ocorreu um erro ao tentar excluir o banner.');
                 });
         }
-    }
+        var confirmDeleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+        confirmDeleteModal.hide();
+    });
 </script>
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>

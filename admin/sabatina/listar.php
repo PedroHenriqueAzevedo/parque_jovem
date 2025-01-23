@@ -34,16 +34,24 @@ $arquivos = buscarArquivosSabatina();
     <title>Gerenciar Escola Sabatina</title>
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        .table-responsive {
+            overflow-x: auto;
+        }
+        .modal-content {
+            max-width: 100%;
+        }
+    </style>
 </head>
 <body>
 <?php include '../../cabecalho/header.php'; ?>
 <div class="container mt-5">
     <div class="card shadow-lg p-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <a href="../index.php" class="btn btn-secondary">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <a href="../index.php" class="btn btn-secondary mb-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
-            <a href="adicionar_sabatina.php" class="btn btn-primary">
+            <a href="adicionar_sabatina.php" class="btn btn-primary mb-2">
                 <i class="bi bi-plus"></i> Adicionar Arquivo
             </a>
         </div>
@@ -51,6 +59,8 @@ $arquivos = buscarArquivosSabatina();
         <h1 class="text-center">Gerenciar Escola Sabatina</h1>
 
         <!-- Mensagem de Sucesso -->
+        <div id="mensagem-exclusao"></div>
+
         <?php if ($mensagem): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <?= htmlspecialchars($mensagem) ?>
@@ -58,67 +68,78 @@ $arquivos = buscarArquivosSabatina();
             </div>
         <?php endif; ?>
 
-        <!-- Mensagem de exclusão -->
-        <?php if ($mensagem_exclusao): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($mensagem_exclusao) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        <?php endif; ?>
+        <div class="table-responsive">
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Arquivo</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($arquivos as $arquivo): ?>
+                    <tr id="arquivo-<?= $arquivo['id'] ?>">
+                        <td><?= htmlspecialchars($arquivo['id']) ?></td>
+                        <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
+                        <td>
+                            <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
+                        </td>
+                        <td>
+                            <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        <table class="table table-striped mt-3">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Título</th>
-                    <th>Arquivo</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($arquivos as $arquivo): ?>
-                <tr id="arquivo-<?= $arquivo['id'] ?>">
-                    <td><?= htmlspecialchars($arquivo['id']) ?></td>
-                    <td><?= htmlspecialchars($arquivo['titulo']) ?></td>
-                    <td>
-                        <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
-                    </td>
-                    <td>
-                        <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                        <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                Tem certeza de que deseja excluir este arquivo?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Excluir</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
+    let deleteId = null;
+
     function confirmDelete(id) {
-        if (confirm('Deseja realmente excluir este arquivo?')) {
-            fetch(`../controllers/sabatina/excluir.php?id=${id}`)
+        deleteId = id;
+        var confirmDeleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        confirmDeleteModal.show();
+    }
+
+    document.getElementById('confirmDeleteButton').addEventListener('click', function() {
+        if (deleteId !== null) {
+            fetch(`../controllers/sabatina/excluir.php?id=${deleteId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const alertDiv = document.createElement('div');
-                        alertDiv.className = 'alert alert-success alert-dismissible fade show';
-                        alertDiv.role = 'alert';
-                        alertDiv.innerHTML = `${data.message}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>`;
-                        document.querySelector('.container').prepend(alertDiv);
-
-                        document.getElementById(`arquivo-${id}`).remove();
-                    } else {
-                        alert('Erro: ' + data.message);
+                        document.getElementById(`arquivo-${deleteId}`).remove();
+                        document.getElementById('mensagem-exclusao').innerHTML = '<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
                     }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    alert('Ocorreu um erro ao tentar excluir o arquivo.');
                 });
         }
-    }
+        var confirmDeleteModal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+        confirmDeleteModal.hide();
+    });
 </script>
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>

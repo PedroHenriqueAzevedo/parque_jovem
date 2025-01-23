@@ -59,8 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="arquivo" class="form-label">Arquivo Atual:</label>
-                <div>
-                    <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank">Visualizar Arquivo</a>
+                <div class="list-group">
+                    <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><strong>Clique aqui para visualizar o arquivo:</strong> <?= basename($arquivo['arquivo']) ?></span>
+                        <i class="bi bi-eye"></i>
+                    </a>
                 </div>
             </div>
             <div class="mb-3">

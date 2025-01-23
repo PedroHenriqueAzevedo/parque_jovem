@@ -9,16 +9,18 @@ function editarArquivoSabatina($id, $dados, $arquivos) {
 
     // Verificar se o título foi preenchido
     if (empty($titulo)) {
-        return ['sucesso' => false, 'erro' => 'Erro no envio do arquivo. Certifique-se de selecionar um arquivo válido.'];
+        return ['sucesso' => false, 'erro' => 'O título não pode estar vazio.'];
     }
 
-    // Verificar se o arquivo foi enviado corretamente
-    if ($arquivo && $arquivo['error'] !== UPLOAD_ERR_OK) {
-        return ['sucesso' => false, 'erro' => 'Erro no envio do arquivo. Certifique-se de selecionar um arquivo válido.'];
-    }
+    // Buscar o nome do arquivo atual para exclusão se necessário
+    $stmt = $conexao->prepare("SELECT arquivo FROM escola_sabatina WHERE id = :id");
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+    $arquivoAtual = $resultado['arquivo'] ?? null;
 
-    // Validar tipo de arquivo permitido
-    if ($arquivo) {
+    if ($arquivo && $arquivo['error'] === UPLOAD_ERR_OK) {
+        // Validar tipo de arquivo permitido
         $extensoesPermitidas = ['pdf', 'doc', 'docx', 'jpg', 'png'];
         $extensaoArquivo = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
 
@@ -37,9 +39,14 @@ function editarArquivoSabatina($id, $dados, $arquivos) {
         $arquivoNome = time() . "_" . basename($arquivo['name']);
         $caminhoCompleto = $pastaDestino . $arquivoNome;
 
-        // Mover o arquivo para o diretório de destino
+        // Mover o novo arquivo para o diretório de destino
         if (!move_uploaded_file($arquivo['tmp_name'], $caminhoCompleto)) {
             return ['sucesso' => false, 'erro' => 'Erro ao salvar o novo arquivo no servidor.'];
+        }
+
+        // Excluir o arquivo antigo
+        if ($arquivoAtual && file_exists($pastaDestino . $arquivoAtual)) {
+            unlink($pastaDestino . $arquivoAtual);
         }
     }
 

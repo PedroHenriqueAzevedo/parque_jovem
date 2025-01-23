@@ -12,13 +12,21 @@ function editarBanner($id, $dados, $arquivos) {
     $imagem = $arquivos['imagem'];
 
     try {
+        $pastaDestino = '../../uploads/';
+
         if ($imagem['error'] === UPLOAD_ERR_OK) {
-            $pastaDestino = '../../uploads/';
-            if (!is_dir($pastaDestino)) {
-                mkdir($pastaDestino, 0755, true);
+            // Obter o nome da imagem atual do banco de dados antes da atualização
+            $stmtImagemAtual = $conexao->prepare("SELECT imagem FROM banners WHERE id = :id");
+            $stmtImagemAtual->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmtImagemAtual->execute();
+            $imagemAtual = $stmtImagemAtual->fetchColumn();
+
+            // Se houver uma imagem existente, excluí-la
+            if ($imagemAtual && file_exists($pastaDestino . $imagemAtual)) {
+                unlink($pastaDestino . $imagemAtual);
             }
 
-            // Obtendo apenas o nome do arquivo
+            // Obtendo apenas o nome do novo arquivo
             $nomeArquivo = basename($imagem['name']);
             $caminhoImagem = $pastaDestino . $nomeArquivo;
 

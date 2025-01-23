@@ -24,27 +24,36 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrossel de Banners</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <style>
+        .carousel-inner img {
+            width: 100%; /* Garante que as imagens ocupem toda a largura */
+            height: 400px; /* Define uma altura fixa para todas as imagens */
+            object-fit: cover; /* Mantém a proporção e corta o excesso */
+        }
+    </style>
 </head>
 <body>
-    <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <?php foreach ($banners as $index => $banner): ?>
-                <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                    <img src="./uploads/<?php echo $banner['imagem']; ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($banner['titulo']); ?>">
-                    <div class="carousel-caption d-none d-md-block">
-                        <h5><?php echo htmlspecialchars($banner['titulo']); ?></h5>
+    <div class="container-fluid p-0">
+        <div id="bannerCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <?php foreach ($banners as $index => $banner): ?>
+                    <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+                        <img src="./uploads/<?php echo $banner['imagem']; ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($banner['titulo']); ?>">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5><?php echo htmlspecialchars($banner['titulo']); ?></h5>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
     </div>
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>

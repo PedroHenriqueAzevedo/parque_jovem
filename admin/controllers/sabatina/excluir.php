@@ -1,10 +1,11 @@
 <?php
 session_start();
+
 header('Content-Type: application/json');
 
 include(__DIR__ . '/../../../conexao/conexao.php');
 
-// Função para buscar um arquivo específico no banco de dados
+// Função para buscar o arquivo por ID
 function buscarArquivoPorId($id) {
     global $conexao;
     $stmt = $conexao->prepare("SELECT arquivo FROM escola_sabatina WHERE id = :id");
@@ -19,37 +20,27 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $id = intval($_GET['id']);
 
     try {
+        // Buscar os detalhes do arquivo pelo ID
         $arquivo = buscarArquivoPorId($id);
 
+        // Definir o caminho da pasta de uploads
+        $uploadDir = __DIR__ . '/../../../uploads/';
+
+        // Verificar se o arquivo existe e excluí-lo
         if ($arquivo && isset($arquivo['arquivo'])) {
-            // Caminho atualizado para apontar corretamente para a raiz do site
-            $caminhoArquivo = realpath(__DIR__ . '/../../../uploads/' . $arquivo['arquivo']);
-
-
-            // Verificar se o arquivo existe e tentar excluí-lo
-            if (file_exists($caminhoArquivo)) {
-                if (unlink($caminhoArquivo)) {
-                    $stmt = $conexao->prepare("DELETE FROM escola_sabatina WHERE id = :id");
-                    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                    $stmt->execute();
-
-                    $response['success'] = true;
-                    $response['message'] = 'Arquivo excluído com sucesso!';
-                } else {
-                    $response['message'] = 'Falha ao excluir o arquivo físico.';
-                }
-            } else {
-                // Arquivo físico não encontrado, mas registro ainda existe no banco
-                $stmt = $conexao->prepare("DELETE FROM escola_sabatina WHERE id = :id");
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $response['success'] = true;
-                $response['message'] = 'Arquivo não encontrado, mas registro removido do banco de dados.';
+            $filePath = $uploadDir . basename($arquivo['arquivo']);
+            if (file_exists($filePath)) {
+                unlink($filePath);
             }
-        } else {
-            $response['message'] = 'Erro: Arquivo não encontrado no banco de dados.';
         }
+
+        // Excluir o registro do banco de dados
+        $stmt = $conexao->prepare("DELETE FROM escola_sabatina WHERE id = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $response['success'] = true;
+        $response['message'] = 'Arquivo excluído com sucesso!';
     } catch (PDOException $e) {
         $response['message'] = 'Erro ao excluir arquivo: ' . $e->getMessage();
     }
