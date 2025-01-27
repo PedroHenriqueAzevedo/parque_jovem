@@ -1,4 +1,3 @@
-
 <?php include './cabecalho/header.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -11,6 +10,13 @@
 </head>
 <body>
 <?php include './conteudo/banners.php'; ?>
+
+<div class="container text-center mt-4">
+    <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
+        <i class="bi bi-book"></i> Acesse a Bíblia Online
+    </a>
+</div>
+
 <?php include './conteudo/arquivo_sabatina.php'; ?>
 <?php include './cabecalho/footer.php'; ?>
 <script src="./assets/js/bootstrap.bundle.min.js"></script>
