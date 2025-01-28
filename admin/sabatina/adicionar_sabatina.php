@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <form action="adicionar_sabatina.php" method="POST" enctype="multipart/form-data">
+        <form action="adicionar_sabatina.php" method="POST" enctype="multipart/form-data" id="formAdicionar">
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título:</label>
                 <input type="text" name="titulo" id="titulo" class="form-control" required>
@@ -54,11 +54,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="arquivo" class="form-label">Selecionar Arquivo:</label>
                 <input type="file" name="arquivo" id="arquivo" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Salvar</button>
+            <button type="submit" class="btn btn-primary w-100" id="btnSubmit">
+                <span id="spinner" class="spinner-border spinner-border-sm me-2" style="display: none;" role="status" aria-hidden="true"></span>
+                Salvar
+            </button>
         </form>
     </div>
 </div>
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('formAdicionar').addEventListener('submit', function () {
+        const btnSubmit = document.getElementById('btnSubmit');
+        const spinner = document.getElementById('spinner');
+        
+        // Exibir o spinner e desativar o botão
+        spinner.style.display = 'inline-block';
+        btnSubmit.disabled = true;
+    });
+</script>
 </body>
 </html>
