@@ -12,9 +12,14 @@
 <?php include './conteudo/banners.php'; ?>
 
 <div class="container text-center mt-4">
-    <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
-        <i class="bi bi-book"></i> Acesse a Bíblia Online
-    </a>
+    <div class="d-flex justify-content-center gap-2">
+        <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
+            <i class="bi bi-book"></i> Acesse a Bíblia Online
+        </a>
+        <a href="https://chat.whatsapp.com/HzdQKz9R2jZ1OSWUM2Mwfx" class="btn btn-success btn-lg" target="_blank">
+            <i class="bi bi-whatsapp"></i> Entre no Grupo do Parque Jovem
+        </a>
+    </div>
 </div>
 
 <?php include './conteudo/arquivo_sabatina.php'; ?>

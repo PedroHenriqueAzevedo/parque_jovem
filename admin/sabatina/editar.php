@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert alert-danger"> <?= htmlspecialchars($erro) ?> </div>
         <?php endif; ?>
 
-        <form action="editar.php?id=<?= $id ?>" method="POST" enctype="multipart/form-data">
+        <form action="editar.php?id=<?= $id ?>" method="POST" enctype="multipart/form-data" id="form-editar">
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título:</label>
                 <input type="text" name="titulo" id="titulo" class="form-control" value="<?= htmlspecialchars($arquivo['titulo']) ?>" required>
@@ -71,11 +70,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="arquivo" class="form-label">Substituir Arquivo (opcional):</label>
                 <input type="file" name="arquivo" id="arquivo" class="form-control">
             </div>
-            <button type="submit" class="btn btn-primary w-100">Salvar Alterações</button>
+            <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center" id="btn-submit">
+                <span id="spinner" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true" style="display: none;"></span>
+                <span id="btn-text">Salvar Alterações</span>
+            </button>
         </form>
     </div>
 </div>
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('form-editar').addEventListener('submit', function() {
+        const submitButton = document.getElementById('btn-submit');
+        const spinner = document.getElementById('spinner');
+        const btnText = document.getElementById('btn-text');
+
+        submitButton.disabled = true;
+        spinner.style.display = 'inline-block';
+        btnText.textContent = 'Salvando...'; // Atualiza o texto do botão enquanto carrega
+    });
+</script>
 </body>
 </html>

@@ -11,13 +11,14 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Parque Joven</title>
+    <title>Login - Parque Jovem</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
 <body>
-<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-    <div class="card p-4" style="width: 100%; max-width: 400px;">
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="card p-4" style="width: 100%; max-width: 400px; min-height: 300px;">
         <h2 class="text-center mb-4">Login - Admin</h2>
 
         <!-- Mensagem de erro via sessão -->
