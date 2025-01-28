@@ -27,7 +27,7 @@ function adicionarArquivoEscolaSabatina($dados, $arquivos) {
     }
 
     // Limitar tamanho do arquivo (5MB)
-    $tamanhoMaximo = 5 * 1024 * 1024;
+    $tamanhoMaximo = 50 * 1024 * 1024;
     if ($arquivo['size'] > $tamanhoMaximo) {
         return ['sucesso' => false, 'erro' => 'O arquivo excede o tamanho máximo permitido de 5MB.'];
     }
