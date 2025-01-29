@@ -26,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Adicionar Arquivo - Escola Sabatina</title>
     <link rel="stylesheet" href="../../assets/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('../../assets/images/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+    </style>
 </head>
 <?php include '../../cabecalho/header.php'; ?>
 <body>

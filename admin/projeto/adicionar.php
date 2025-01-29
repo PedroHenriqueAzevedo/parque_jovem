@@ -78,6 +78,14 @@ if ($projeto_id) {
             align-items: center;
             justify-content: center;
         }
+        body {
+            background-image: url('../../assets/images/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+   
     </style>
 </head>
 <?php include '../../cabecalho/header.php'; ?>

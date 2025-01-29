@@ -41,6 +41,15 @@ $arquivos = buscarArquivosSabatina();
         .modal-content {
             max-width: 100%;
         }
+      
+        body {
+            background-image: url('../../assets/images/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+    
     </style>
 </head>
 <body>
