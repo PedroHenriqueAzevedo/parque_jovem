@@ -25,10 +25,21 @@ try {
     <title>Carrossel de Banners</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <style>
-        .carousel-inner img {
-            width: 100%; /* Garante que as imagens ocupem toda a largura */
-            height: 400px; /* Define uma altura fixa para todas as imagens */
+        /* Estilo específico para esse carrossel */
+        #bannerCarousel .carousel-inner {
+            position: relative;
+        }
+
+        #bannerCarousel .carousel-item img {
+            width: 100%; /* Garante que a imagem ocupe toda a largura */
+            height: 400px; /* Define uma altura fixa */
             object-fit: cover; /* Mantém a proporção e corta o excesso */
+            display: block; /* Evita espaçamentos indesejados */
+        }
+
+        /* Evita que imagens de outros carrosséis sejam afetadas */
+        .outro-carousel .carousel-item img {
+            height: 300px; /* Altura diferente para outro carrossel */
         }
     </style>
 </head>
@@ -58,3 +69,4 @@ try {
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

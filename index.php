@@ -23,6 +23,7 @@
 </div>
 
 <?php include './conteudo/arquivo_sabatina.php'; ?>
+<?php include './conteudo/projeto.php'; ?>
 <?php include './cabecalho/footer.php'; ?>
 <script src="./assets/js/bootstrap.bundle.min.js"></script>
 </body>

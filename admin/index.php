@@ -11,7 +11,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Parque Joven</title>
+    <title>Painel Administrativo - Parque Jovem</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 </head>
@@ -26,6 +26,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
         </a>
         <a href="sabatina/listar.php" class="btn btn-success btn-lg">
             <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
+        </a>
+        <a href="projeto/listar.php" class="btn btn-warning btn-lg"> 
+            <i class="bi bi-folder"></i> Gerenciar Projetos
         </a>
         <a href="../admin/logout.php" class="btn btn-danger btn-lg">
             <i class="bi bi-box-arrow-right"></i> Sair
