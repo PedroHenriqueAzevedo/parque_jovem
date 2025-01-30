@@ -21,7 +21,7 @@ try {
 </head>
 <body>
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Arquivos da Escola Sabatina</h2>
+    <h2 class="text-center mb-4 text-white">Arquivos da Escola Sabatina</h2>
     <div class="list-group">
         <?php foreach ($result as $row): ?>
             <a href="<?= dirname($_SERVER['PHP_SELF']) . '../' . htmlspecialchars($row['arquivo']) ?>" 

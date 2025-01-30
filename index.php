@@ -15,10 +15,7 @@
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
-    
-        h2 {
-            color: white; /* Define a cor do h2 como branco */
-        }
+
     
     </style>
 </head>

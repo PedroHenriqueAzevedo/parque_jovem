@@ -50,7 +50,7 @@ try {
 <body>
 <div class="container mt-5">
     <?php if (!empty($projetos)): ?>
-        <h2 class="text-center mb-4">Projetos Parque Jovem</h2>
+        <h2 class="text-center mb-4 text-white">Projetos Parque Jovem</h2>
         <div class="row">
             <?php foreach ($projetos as $projeto): ?>
                 <div class="col-md-4 mb-4">
