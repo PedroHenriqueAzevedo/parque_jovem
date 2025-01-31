@@ -28,31 +28,29 @@ function editarProjeto($id, $dados, $arquivos)
         // Excluir imagens removidas pelo usuário
         if (!empty($dados['imagens_excluidas'])) {
             $imagensExcluidas = explode(',', $dados['imagens_excluidas']);
-            foreach ($imagensExcluidas as $imagemId) {
-                $imagemId = intval($imagemId);
-                if ($imagemId > 0) {
-                    // Buscar caminho da imagem
-                    $stmt = $conexao->prepare("SELECT caminho FROM projetos_fotos WHERE id = :imagem_id");
-                    $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
-                    $stmt->execute();
-                    $imagem = $stmt->fetch(PDO::FETCH_ASSOC);
+            foreach ($imagensExcluidas as $nomeImagem) {
+                // Buscar imagem pelo nome
+                $stmt = $conexao->prepare("SELECT id, caminho FROM projetos_fotos WHERE caminho LIKE :nomeImagem AND projeto_id = :projeto_id");
+                $stmt->bindValue(':nomeImagem', "%$nomeImagem%", PDO::PARAM_STR);
+                $stmt->bindValue(':projeto_id', $id, PDO::PARAM_INT);
+                $stmt->execute();
+                $imagem = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    if ($imagem) {
-                        $caminhoCompleto = __DIR__ . '/../../../' . $imagem['caminho'];
-                        if (file_exists($caminhoCompleto)) {
-                            unlink($caminhoCompleto);
-                        }
+                if ($imagem) {
+                    $caminhoCompleto = __DIR__ . '/../../../' . $imagem['caminho'];
+                    if (file_exists($caminhoCompleto)) {
+                        unlink($caminhoCompleto);
                     }
 
                     // Remover do banco de dados
                     $stmt = $conexao->prepare("DELETE FROM projetos_fotos WHERE id = :imagem_id");
-                    $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
+                    $stmt->bindParam(':imagem_id', $imagem['id'], PDO::PARAM_INT);
                     $stmt->execute();
                 }
             }
         }
 
-        // Verificar se há novas imagens para upload
+        // Adicionar novas imagens se houver upload
         if (!empty($arquivos['fotos']['name'][0])) {
             $pastaDestino = __DIR__ . '/../../../uploads/';
             if (!is_dir($pastaDestino)) {
@@ -70,11 +68,13 @@ function editarProjeto($id, $dados, $arquivos)
                     continue;
                 }
 
-                $nomeImagem = time() . "_" . basename($nomeArquivo);
+                // Criar nome único para evitar conflitos
+                $nomeImagem = time() . "_" . uniqid() . "." . $extensaoImagem;
                 $caminhoCompleto = $pastaDestino . $nomeImagem;
                 $caminhoRelativo = 'uploads/' . $nomeImagem;
 
                 if (move_uploaded_file($arquivos['fotos']['tmp_name'][$key], $caminhoCompleto)) {
+                    // Inserir no banco de dados
                     $stmtImagem = $conexao->prepare("INSERT INTO projetos_fotos (projeto_id, caminho) VALUES (:projeto_id, :caminho)");
                     $stmtImagem->bindParam(':projeto_id', $id, PDO::PARAM_INT);
                     $stmtImagem->bindParam(':caminho', $caminhoRelativo);

@@ -38,9 +38,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
     <p>Bem-vindo ao painel administrativo. Escolha uma das opções abaixo:</p>
 
     <div class="d-grid gap-3 col-6 mx-auto">
-        <a href="banners/banners.php" class="btn btn-primary btn-lg">
-            <i class="bi bi-card-image"></i> Gerenciar Banners
-        </a>
+        
         <a href="sabatina/listar.php" class="btn btn-success btn-lg">
             <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
         </a>

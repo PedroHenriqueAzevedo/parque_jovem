@@ -129,6 +129,8 @@ if ($projeto_id) {
                     <?php endforeach; ?>
                 </div>
             </div>
+            <input type="hidden" name="imagens_excluidas" id="imagens_excluidas">
+
             <button type="submit" class="btn btn-primary w-100" id="btnSubmit">
                 <span id="spinner" class="spinner-border spinner-border-sm me-2" style="display: none;" role="status" aria-hidden="true"></span>
                 Salvar
@@ -139,69 +141,78 @@ if ($projeto_id) {
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 <script>
+    
+
     document.addEventListener('DOMContentLoaded', function () {
-        const fotosInput = document.getElementById('fotos');
-        const previewContainer = document.getElementById('preview-container');
-        let imagensSelecionadas = [];
+    const fotosInput = document.getElementById('fotos');
+    const previewContainer = document.getElementById('preview-container');
+    const inputExcluidas = document.getElementById('imagens_excluidas');
 
-        fotosInput.addEventListener('change', function (event) {
-            const arquivos = Array.from(event.target.files);
+    let imagensSelecionadas = [];
+    let imagensExcluidas = [];
 
-            arquivos.forEach((arquivo) => {
-                if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
-                    imagensSelecionadas.push(arquivo);
-                }
-            });
+    fotosInput.addEventListener('change', function (event) {
+        const arquivos = Array.from(event.target.files);
 
-            atualizarPreview();
-        });
-
-        function atualizarPreview() {
-            previewContainer.innerHTML = ""; // Limpa a área antes de recriar os elementos
-
-            imagensSelecionadas.forEach((arquivo, index) => {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const previewItem = document.createElement("div");
-                    previewItem.classList.add("preview-item");
-
-                    const imgElement = document.createElement("img");
-                    imgElement.src = e.target.result;
-
-                    const removeButton = document.createElement("button");
-                    removeButton.innerHTML = "&times;";
-                    removeButton.classList.add("remove-btn");
-                    removeButton.onclick = function () {
-                        imagensSelecionadas.splice(index, 1);
-                        atualizarPreview();
-                    };
-
-                    previewItem.appendChild(imgElement);
-                    previewItem.appendChild(removeButton);
-                    previewContainer.appendChild(previewItem);
-                };
-                reader.readAsDataURL(arquivo);
-            });
-
-            const dataTransfer = new DataTransfer();
-            imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
-            fotosInput.files = dataTransfer.files;
-        }
-
-        window.removerImagemExistente = function (botao, caminho) {
-            if (confirm("Tem certeza que deseja remover esta imagem?")) {
-                botao.parentElement.remove();
-                console.log("Imagem removida: " + caminho);
+        arquivos.forEach((arquivo) => {
+            if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
+                imagensSelecionadas.push(arquivo);
             }
-        };
-
-        document.getElementById('formAdicionar').addEventListener('submit', function () {
-            const btnSubmit = document.getElementById('btnSubmit');
-            const spinner = document.getElementById('spinner');
-            spinner.style.display = 'inline-block';
-            btnSubmit.disabled = true;
         });
+
+        atualizarPreview();
     });
+
+    function atualizarPreview() {
+        previewContainer.innerHTML = "";
+
+        imagensSelecionadas.forEach((arquivo, index) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const previewItem = document.createElement("div");
+                previewItem.classList.add("preview-item");
+
+                const imgElement = document.createElement("img");
+                imgElement.src = e.target.result;
+
+                const removeButton = document.createElement("button");
+                removeButton.innerHTML = "&times;";
+                removeButton.classList.add("remove-btn");
+                removeButton.onclick = function () {
+                    imagensSelecionadas.splice(index, 1);
+                    atualizarPreview();
+                };
+
+                previewItem.appendChild(imgElement);
+                previewItem.appendChild(removeButton);
+                previewContainer.appendChild(previewItem);
+            };
+            reader.readAsDataURL(arquivo);
+        });
+
+        const dataTransfer = new DataTransfer();
+        imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
+        fotosInput.files = dataTransfer.files;
+    }
+
+    window.removerImagemExistente = function (botao, caminho) {
+        if (confirm("Tem certeza que deseja remover esta imagem?")) {
+            botao.parentElement.remove();
+
+            let nomeArquivo = caminho.split('/').pop();
+            imagensExcluidas.push(nomeArquivo);
+            inputExcluidas.value = imagensExcluidas.join(',');
+        }
+    };
+
+    document.getElementById('formAdicionar').addEventListener('submit', function () {
+        const btnSubmit = document.getElementById('btnSubmit');
+        const spinner = document.getElementById('spinner');
+        spinner.style.display = 'inline-block';
+        btnSubmit.disabled = true;
+    });
+});
+
 </script>
 </body>
 </html>

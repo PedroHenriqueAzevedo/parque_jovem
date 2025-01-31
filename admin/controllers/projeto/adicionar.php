@@ -10,6 +10,30 @@ function adicionarProjetoComImagens($dados, $arquivos) {
     if (empty($nome) || empty($conteudo)) {
         return ['sucesso' => false, 'erro' => 'Preencha todos os campos obrigatórios.'];
     }
+    // Excluir imagens removidas pelo usuário
+if (!empty($dados['imagens_excluidas'])) {
+    $imagensExcluidas = explode(',', $dados['imagens_excluidas']);
+    foreach ($imagensExcluidas as $nomeImagem) {
+        $stmt = $conexao->prepare("SELECT id, caminho FROM projetos_fotos WHERE caminho LIKE :nomeImagem");
+        $stmt->bindValue(':nomeImagem', "%$nomeImagem%", PDO::PARAM_STR);
+        $stmt->execute();
+        $imagem = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($imagem) {
+            $caminhoCompleto = __DIR__ . '/../../../' . $imagem['caminho'];
+            if (file_exists($caminhoCompleto)) {
+                unlink($caminhoCompleto);
+            }
+
+            // Remover do banco de dados
+            $stmt = $conexao->prepare("DELETE FROM projetos_fotos WHERE id = :imagem_id");
+            $stmt->bindParam(':imagem_id', $imagem['id'], PDO::PARAM_INT);
+            $stmt->execute();
+        }
+    }
+}
+
+
 
     try {
         $projeto_id = isset($dados['id']) ? intval($dados['id']) : null;

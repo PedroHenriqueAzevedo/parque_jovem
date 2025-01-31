@@ -18,7 +18,7 @@
     </style>
 </head>
 <body>
-<?php include './conteudo/banners.php'; ?>
+
 
 <div class="container text-center mt-4">
     <div class="d-flex justify-content-center gap-2 flex-wrap">
