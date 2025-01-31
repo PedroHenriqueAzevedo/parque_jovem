@@ -19,7 +19,6 @@
 </head>
 <body>
 
-
 <div class="container text-center mt-4">
     <div class="d-flex justify-content-center gap-2 flex-wrap">
         <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
@@ -31,10 +30,12 @@
         <a href="./conteudo/livro.php" class="btn btn-warning btn-lg">
             <i class="bi bi-file-earmark-pdf"></i> Autêntico - Devocional Jovem 2025
         </a>
+        <a href="./conteudo/arquivo_sabatina.php" class="btn btn-info btn-lg">
+            <i class="bi bi-journal-bookmark"></i> Lição Escola Sabatina
+        </a>
     </div>
 </div>
 
-<?php include './conteudo/arquivo_sabatina.php'; ?>
 <?php include './conteudo/projeto.php'; ?>
 <?php include './cabecalho/footer.php'; ?>
 <script src="./assets/js/bootstrap.bundle.min.js"></script>
