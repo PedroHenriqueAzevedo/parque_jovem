@@ -15,20 +15,21 @@
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
-
-    
     </style>
 </head>
 <body>
 <?php include './conteudo/banners.php'; ?>
 
 <div class="container text-center mt-4">
-    <div class="d-flex justify-content-center gap-2">
+    <div class="d-flex justify-content-center gap-2 flex-wrap">
         <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
             <i class="bi bi-book"></i> Acesse a Bíblia Online
         </a>
         <a href="https://chat.whatsapp.com/HzdQKz9R2jZ1OSWUM2Mwfx" class="btn btn-success btn-lg" target="_blank">
             <i class="bi bi-whatsapp"></i> Entre no Grupo do Parque Jovem
+        </a>
+        <a href="./conteudo/livro.php" class="btn btn-warning btn-lg">
+            <i class="bi bi-file-earmark-pdf"></i> Autêntico - Devocional Jovem 2025
         </a>
     </div>
 </div>

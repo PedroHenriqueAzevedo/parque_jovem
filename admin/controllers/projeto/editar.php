@@ -1,7 +1,8 @@
 <?php
 include(__DIR__ . '/../../../conexao/conexao.php');
 
-function editarProjeto($id, $dados, $arquivos) {
+function editarProjeto($id, $dados, $arquivos)
+{
     global $conexao;
 
     $id = intval($id);
@@ -23,6 +24,33 @@ function editarProjeto($id, $dados, $arquivos) {
         $stmt->bindParam(':conteudo', $conteudo);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
+
+        // Excluir imagens removidas pelo usuário
+        if (!empty($dados['imagens_excluidas'])) {
+            $imagensExcluidas = explode(',', $dados['imagens_excluidas']);
+            foreach ($imagensExcluidas as $imagemId) {
+                $imagemId = intval($imagemId);
+                if ($imagemId > 0) {
+                    // Buscar caminho da imagem
+                    $stmt = $conexao->prepare("SELECT caminho FROM projetos_fotos WHERE id = :imagem_id");
+                    $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
+                    $stmt->execute();
+                    $imagem = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if ($imagem) {
+                        $caminhoCompleto = __DIR__ . '/../../../' . $imagem['caminho'];
+                        if (file_exists($caminhoCompleto)) {
+                            unlink($caminhoCompleto);
+                        }
+                    }
+
+                    // Remover do banco de dados
+                    $stmt = $conexao->prepare("DELETE FROM projetos_fotos WHERE id = :imagem_id");
+                    $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
+                    $stmt->execute();
+                }
+            }
+        }
 
         // Verificar se há novas imagens para upload
         if (!empty($arquivos['fotos']['name'][0])) {
@@ -58,39 +86,6 @@ function editarProjeto($id, $dados, $arquivos) {
         return ['sucesso' => true];
     } catch (PDOException $e) {
         return ['sucesso' => false, 'erro' => 'Erro ao atualizar projeto: ' . $e->getMessage()];
-    }
-}
-
-// Processar exclusão de imagem via AJAX
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['excluir_imagem'])) {
-    $imagemId = intval($_POST['excluir_imagem']);
-    global $conexao;
-
-    try {
-        $stmt = $conexao->prepare("SELECT caminho FROM projetos_fotos WHERE id = :imagem_id");
-        $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
-        $stmt->execute();
-        $imagem = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($imagem) {
-            $caminhoCompleto = __DIR__ . '/../../../' . $imagem['caminho'];
-            if (file_exists($caminhoCompleto)) {
-                unlink($caminhoCompleto);
-            }
-
-            $stmt = $conexao->prepare("DELETE FROM projetos_fotos WHERE id = :imagem_id");
-            $stmt->bindParam(':imagem_id', $imagemId, PDO::PARAM_INT);
-            $stmt->execute();
-
-            echo json_encode(['sucesso' => true]);
-            exit;
-        } else {
-            echo json_encode(['sucesso' => false, 'erro' => 'Imagem não encontrada.']);
-            exit;
-        }
-    } catch (PDOException $e) {
-        echo json_encode(['sucesso' => false, 'erro' => 'Erro ao excluir a imagem: ' . $e->getMessage()]);
-        exit;
     }
 }
 ?>
