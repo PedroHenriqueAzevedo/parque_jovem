@@ -17,7 +17,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lição Da Escola Sabatina</title>
+    <title>Escola Sabatina</title>
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
@@ -43,7 +43,7 @@ try {
             max-width: 100%;
             background: white;
         }
-        #page-input {
+        .page-input {
             width: 60px;
             text-align: center;
             border: none;
@@ -87,7 +87,7 @@ try {
 <body>
 
 <div class="container">
-    <h2 class="text-center mt-4">Lição da Escola Sabatina</h2>
+    <h2 class="text-center mt-4">Arquivos da Escola Sabatina</h2>
     
     <?php if ($arquivos): ?>
         <?php foreach ($arquivos as $arquivo): ?>
@@ -121,6 +121,8 @@ try {
         const ctx = canvas.getContext('2d');
         const pageInput = container.querySelector('.page-input');
         const pageCount = container.querySelector('.page-count');
+        const prevButton = container.querySelector('.prev');
+        const nextButton = container.querySelector('.next');
 
         const renderPage = num => {
             pageIsRendering = true;
@@ -147,13 +149,23 @@ try {
             renderPage(pageNum);
         }).catch(err => console.error('Erro ao carregar o PDF:', err));
 
-        container.querySelector('.prev').addEventListener('click', () => {
+        pageInput.addEventListener('change', () => {
+            let pageNumber = parseInt(pageInput.value);
+            if (pageNumber >= 1 && pageNumber <= pdfDoc.numPages) {
+                pageNum = pageNumber;
+                renderPage(pageNum);
+            } else {
+                pageInput.value = pageNum;
+            }
+        });
+
+        prevButton.addEventListener('click', () => {
             if (pageNum <= 1) return;
             pageNum--;
             renderPage(pageNum);
         });
 
-        container.querySelector('.next').addEventListener('click', () => {
+        nextButton.addEventListener('click', () => {
             if (pageNum >= pdfDoc.numPages) return;
             pageNum++;
             renderPage(pageNum);
