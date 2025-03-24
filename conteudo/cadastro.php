@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-            <h3 class="card-title mb-4">Cadastro de Jovens</h3>
+<h3 class="card-title mb-4 text-center">Cadastros de Jovens</h3>
 
             <?php if ($sucesso): ?>
                 <div class="alert alert-success">

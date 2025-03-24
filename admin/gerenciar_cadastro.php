@@ -78,7 +78,8 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= htmlspecialchars($cadastro['tipo_cadastro']) ?></td>
                                     <td><?= htmlspecialchars($cadastro['adventista']) ?></td>
                                     <td><?= htmlspecialchars($cadastro['igreja'] ?? '-') ?></td>
-                                    <td><?= date('d/m/Y H:i', strtotime($cadastro['data_cadastro'])) ?></td>
+                                    <td><?= date('d/m/Y', strtotime($cadastro['data_cadastro'])) ?></td>
+
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
