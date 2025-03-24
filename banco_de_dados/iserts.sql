@@ -21,3 +21,13 @@ CREATE TABLE projetos_fotos (
     caminho VARCHAR(255) NOT NULL,
     FOREIGN KEY (projeto_id) REFERENCES projetos(id) ON DELETE CASCADE
 );
+
+CREATE TABLE cadastros_jovens (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    tipo_cadastro VARCHAR(100) NOT NULL,
+    adventista ENUM('Sim', 'Não') NOT NULL,
+    igreja VARCHAR(255),
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

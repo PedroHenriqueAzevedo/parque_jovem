@@ -33,6 +33,10 @@
         <a href="./conteudo/arquivo_sabatina.php" class="btn btn-info btn-lg">
             <i class="bi bi-journal-bookmark"></i> Lição Escola Sabatina
         </a>
+        <!-- Novo botão para Cadastro de Jovens -->
+        <a href="./conteudo/cadastro.php" class="btn btn-secondary btn-lg">
+            <i class="bi bi-person-plus"></i> Quero me cadastrar
+        </a>
     </div>
 </div>
 
