@@ -59,36 +59,38 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Nome</th>
-                            <th>Telefone</th>
-                            <th>Tipo de Cadastro</th>
-                            <th>É Adventista?</th>
-                            <th>Igreja</th>
-                            <th>Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (count($cadastros) > 0): ?>
-                            <?php foreach ($cadastros as $cadastro): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($cadastro['nome']) ?></td>
-                                    <td class="text-nowrap"><?= htmlspecialchars($cadastro['telefone']) ?></td>
-                                    <td><?= htmlspecialchars($cadastro['tipo_cadastro']) ?></td>
-                                    <td><?= htmlspecialchars($cadastro['adventista']) ?></td>
-                                    <td><?= htmlspecialchars($cadastro['igreja'] ?? '-') ?></td>
-                                    <td><?= date('d/m/Y', strtotime($cadastro['data_cadastro'])) ?></td>
+    <thead class="table-dark">
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Tipo de Cadastro</th>
+            <th>É Adventista?</th>
+            <th>Igreja</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if (count($cadastros) > 0): ?>
+            <?php foreach ($cadastros as $cadastro): ?>
+                <tr>
+                    <td><?= htmlspecialchars($cadastro['id']) ?></td>
+                    <td><?= htmlspecialchars($cadastro['nome']) ?></td>
+                    <td class="text-nowrap"><?= htmlspecialchars($cadastro['telefone']) ?></td>
+                    <td><?= htmlspecialchars($cadastro['tipo_cadastro']) ?></td>
+                    <td><?= htmlspecialchars($cadastro['adventista']) ?></td>
+                    <td><?= htmlspecialchars($cadastro['igreja'] ?? '-') ?></td>
+                    <td><?= date('d/m/Y', strtotime($cadastro['data_cadastro'])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td colspan="7" class="text-center">Nenhum cadastro encontrado.</td>
+            </tr>
+        <?php endif; ?>
+    </tbody>
+</table>
 
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center">Nenhum cadastro encontrado.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
             </div>
 
         </div>

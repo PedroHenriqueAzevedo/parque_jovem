@@ -3,6 +3,7 @@ include '../cabecalho/header.php';
 include '../conexao/conexao.php';
 
 $sucesso = false;
+$id_cadastro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['nome'];
@@ -14,25 +15,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conexao->prepare("INSERT INTO cadastros_jovens (nome, telefone, tipo_cadastro, adventista, igreja) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute([$nome, $telefone, $tipo_cadastro, $adventista, $igreja]);
 
+    $id_cadastro = $conexao->lastInsertId();
     $sucesso = true;
 }
 ?>
 
 <div class="container mt-5 mb-5">
-    <div class="card shadow"> <!-- card padrão, sem bg-dark -->
+    <div class="card shadow">
         <div class="card-body">
-            <!-- Botão de voltar com cor do admin -->
             <a href="../index.php" class="btn btn-secondary mb-3">
-    <i class="bi bi-arrow-left"></i> Voltar
-</a>
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
 
-
-
-<h3 class="card-title mb-4 text-center">Cadastros de Jovens</h3>
+            <h3 class="card-title mb-4 text-center">Cadastros de Jovens</h3>
 
             <?php if ($sucesso): ?>
                 <div class="alert alert-success">
                     Cadastro enviado com sucesso!<br>
+                    Seu código é <strong>#<?= htmlspecialchars($id_cadastro) ?></strong>.<br>
                     Os coordenadores dos jovens entrarão em contato com você via WhatsApp para mais informações.
                 </div>
             <?php endif; ?>
