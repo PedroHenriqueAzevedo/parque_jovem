@@ -1,13 +1,35 @@
 <?php 
-include '../cabecalho/header.php'; 
 include '../conexao/conexao.php';
+
+// AJAX para localStorage
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verificar_ajax'])) {
+    header('Content-Type: application/json');
+    $id = $_POST['id'] ?? null;
+    $nome = $_POST['nome'] ?? null;
+
+    if (!$id || !$nome) {
+        echo json_encode(['valido' => false]);
+        exit;
+    }
+
+    $stmt = $conexao->prepare("SELECT id FROM cadastros_jovens WHERE id = ? AND nome = ?");
+    $stmt->execute([$id, $nome]);
+    $existe = $stmt->fetch();
+
+    echo json_encode(['valido' => $existe ? true : false]);
+    exit;
+}
+
+include '../cabecalho/header.php';
 
 $sucesso = false;
 $id_cadastro = null;
 $nome_cadastro = null;
 $mensagem_erro = "";
+$mensagem_recuperacao = "";
+$exibir_busca = false;
 
-// NOVO: recuperação por telefone apenas
+// RECUPERAÇÃO
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recuperar'])) {
     $telefone_busca = $_POST['telefone_busca'];
 
@@ -20,12 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['recuperar'])) {
         $nome_cadastro = $usuario['nome'];
         $sucesso = true;
     } else {
-        echo "<script>alert('Cadastro não encontrado. Verifique o telefone informado.');</script>";
+        $mensagem_recuperacao = "Cadastro não encontrado. Verifique o telefone informado.";
+        $exibir_busca = true;
     }
 }
 
 // CADASTRO NOVO
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['recuperar'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['recuperar']) && !isset($_POST['verificar_ajax'])) {
     $nome = $_POST['nome'];
     $telefone = $_POST['telefone'];
     $tipo_cadastro = $_POST['tipo_cadastro'];
@@ -35,19 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['recuperar'])) {
     $erro_nome = false;
     $erro_telefone = false;
 
-    // Verificar nome
     $stmt_nome = $conexao->prepare("SELECT id FROM cadastros_jovens WHERE nome = ?");
     $stmt_nome->execute([$nome]);
-    if ($stmt_nome->fetch()) {
-        $erro_nome = true;
-    }
+    if ($stmt_nome->fetch()) $erro_nome = true;
 
-    // Verificar telefone
     $stmt_tel = $conexao->prepare("SELECT id FROM cadastros_jovens WHERE telefone = ?");
     $stmt_tel->execute([$telefone]);
-    if ($stmt_tel->fetch()) {
-        $erro_telefone = true;
-    }
+    if ($stmt_tel->fetch()) $erro_telefone = true;
 
     if ($erro_nome && $erro_telefone) {
         $mensagem_erro = "Já existe um cadastro com esse nome e telefone.";
@@ -98,21 +115,20 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
                     localStorage.setItem('cadastro_nome', '<?= addslashes($nome_cadastro) ?>');
                 </script>
             <?php else: ?>
+
                 <?php if (!empty($mensagem_erro)): ?>
-                    <div class="alert alert-danger text-center" id="mensagem-erro">
-                        <?= $mensagem_erro ?>
-                    </div>
+                    <div class="alert alert-danger text-center" id="mensagem-erro"><?= $mensagem_erro ?></div>
                 <?php endif; ?>
 
-                <form method="POST">
+                <form method="POST" id="form-cadastro" style="<?= $exibir_busca ? 'display: none;' : '' ?>">
                     <div class="mb-3">
                         <label class="form-label">Nome completo:</label>
-                        <input type="text" class="form-control nome" name="nome" placeholder="Ex: João da Silva" required>
+                        <input type="text" class="form-control nome" name="nome" required>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Telefone (com DDD):</label>
-                        <input type="text" class="form-control telefone" name="telefone" placeholder="Ex: (11) 91234-5678" required>
+                        <input type="text" class="form-control telefone" name="telefone" required>
                     </div>
 
                     <div class="mb-3">
@@ -139,7 +155,7 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
 
                     <div class="mb-3" id="campo_igreja" style="display:none;">
                         <label class="form-label">Qual igreja?</label>
-                        <input type="text" class="form-control" name="igreja" placeholder="Ex: IASD Parque São Domingos">
+                        <input type="text" class="form-control" name="igreja">
                     </div>
 
                     <button type="submit" class="btn btn-primary">Enviar</button>
@@ -149,14 +165,21 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
                     </div>
                 </form>
 
-                <div id="busca-cadastro" style="display:none;" class="mt-4">
+                <div id="busca-cadastro" class="mt-4" style="<?= $exibir_busca ? '' : 'display: none;' ?>">
                     <h5 class="text-center">Recuperar número de cadastro</h5>
+
+                    <?php if (!empty($mensagem_recuperacao)): ?>
+                        <div class="alert alert-danger text-center" id="mensagem-recuperacao">
+                            <?= $mensagem_recuperacao ?>
+                        </div>
+                    <?php endif; ?>
+
                     <form method="POST">
                         <input type="hidden" name="recuperar" value="1">
 
                         <div class="mb-3">
                             <label class="form-label">Telefone (com DDD):</label>
-                            <input type="text" class="form-control telefone" name="telefone_busca" placeholder="Ex: (11) 91234-5678" required>
+                            <input type="text" class="form-control telefone" name="telefone_busca" required>
                         </div>
 
                         <button type="submit" class="btn btn-outline-primary">Buscar</button>
@@ -169,46 +192,53 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
 </div>
 
 <script>
-// Máscara para todos os campos de telefone
-const telefones = document.querySelectorAll('.telefone');
-telefones.forEach(input => {
+// Máscara para telefone
+document.querySelectorAll('.telefone').forEach(input => {
     input.addEventListener('input', function (e) {
         let valor = e.target.value.replace(/\D/g, '').substring(0, 11);
-        if (valor.length <= 10) {
-            e.target.value = valor.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-        } else {
-            e.target.value = valor.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-        }
+        e.target.value = valor.length <= 10 
+            ? valor.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
+            : valor.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
     });
 });
 
-// Remove alertas após 4 segundos (exceto sucesso)
+// Remove alertas após 4s
 setTimeout(() => {
     document.querySelectorAll('.alert-danger, .alert-warning').forEach(el => el.remove());
 }, 4000);
 
-// Verifica se há dados salvos no navegador
+// Verifica localStorage
 const nomeSalvo = localStorage.getItem('cadastro_nome');
 const idSalvo = localStorage.getItem('cadastro_id');
 
-// Se sim, mostra a mensagem de sucesso
 if (nomeSalvo && idSalvo && !window.location.search.includes('id=')) {
-    document.getElementById('mensagem-cadastro').innerHTML = `
-        <div class="alert alert-success text-center">
-            <h4 class="text-success">Olá ${nomeSalvo}, você já está cadastrado!</h4>
-            <p>Seu número de cadastro é:</p>
-            <h1 class="display-3 fw-bold text-dark">${idSalvo}</h1>
-            <p class="mt-3">Os coordenadores dos jovens entrarão em contato com você via WhatsApp.</p>
-        </div>
-    `;
+    fetch('', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `verificar_ajax=1&id=${encodeURIComponent(idSalvo)}&nome=${encodeURIComponent(nomeSalvo)}`
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.valido) {
+            document.getElementById('mensagem-cadastro').innerHTML = `
+                <div class="alert alert-success text-center">
+                    <h4 class="text-success">Olá ${nomeSalvo}, você já está cadastrado!</h4>
+                    <p>Seu número de cadastro é:</p>
+                    <h1 class="display-3 fw-bold text-dark">${idSalvo}</h1>
+                    <p class="mt-3">Os coordenadores dos jovens entrarão em contato com você via WhatsApp.</p>
+                </div>
+            `;
+        } else {
+            localStorage.removeItem('cadastro_id');
+            localStorage.removeItem('cadastro_nome');
+        }
+    });
 }
 
-// Função para mostrar a área de busca
 function mostrarBusca() {
-    document.querySelector("form[method='POST']").style.display = 'none';
+    document.getElementById('form-cadastro').style.display = 'none';
     document.getElementById('busca-cadastro').style.display = 'block';
 }
 </script>
-
 
 <?php include '../cabecalho/footer.php'; ?>
