@@ -22,12 +22,10 @@ if (!$projeto) {
     exit;
 }
 
-// Pegar imagens existentes do banco
 $imagensExistentes = $projeto['fotos'] ?? [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once __DIR__ . '/../../conexao/conexao.php';
-
 
     $resultado = editarProjeto($id, $_POST, $_FILES);
     if ($resultado['sucesso']) {
@@ -53,14 +51,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 10px;
+            width: 100%;
+            justify-content: flex-start;
         }
 
         .preview-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
+            flex: 0 0 auto;
+            width: 120px;
+            height: 120px;
             border-radius: 8px;
             overflow: hidden;
+            position: relative;
+            background-color: #f8f9fa;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
 
         .preview-item img {
@@ -86,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             align-items: center;
             justify-content: center;
         }
+
         body {
             background-image: url('../../assets/images/image.jpg');
             background-size: cover;
@@ -129,6 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="button" class="remove-btn" onclick="removerImagemExistente(this, '<?= $imagem ?>')">&times;</button>
                         </div>
                     <?php endforeach; ?>
+                    <div id="novas-imagens"></div>
                 </div>
             </div>
             <div class="mb-3">
@@ -148,117 +153,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const fotosInput = document.getElementById('fotos');
-    const previewContainer = document.getElementById('preview-container');
-    let imagensSelecionadas = [];
+        const fotosInput = document.getElementById('fotos');
+        const previewContainer = document.getElementById('preview-container');
+        const novasImagensContainer = document.getElementById('novas-imagens');
+        let imagensSelecionadas = [];
 
-    fotosInput.addEventListener('change', function (event) {
-        const arquivos = Array.from(event.target.files);
-
-        arquivos.forEach((arquivo) => {
-            if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
-                imagensSelecionadas.push(arquivo);
-            }
+        fotosInput.addEventListener('change', function (event) {
+            const arquivos = Array.from(event.target.files);
+            arquivos.forEach((arquivo) => {
+                if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
+                    imagensSelecionadas.push(arquivo);
+                }
+            });
+            adicionarNovasImagens();
         });
 
-        adicionarNovasImagens();
-    });
+        function adicionarNovasImagens() {
+            novasImagensContainer.innerHTML = '';
 
-    function adicionarNovasImagens() {
-        imagensSelecionadas.forEach((arquivo, index) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const previewItem = document.createElement("div");
-                previewItem.classList.add("preview-item");
+            imagensSelecionadas.forEach((arquivo, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewItem = document.createElement("div");
+                    previewItem.classList.add("preview-item");
 
-                const imgElement = document.createElement("img");
-                imgElement.src = e.target.result;
+                    const imgElement = document.createElement("img");
+                    imgElement.src = e.target.result;
 
-                const removeButton = document.createElement("button");
-                removeButton.innerHTML = "&times;";
-                removeButton.classList.add("remove-btn");
-                removeButton.setAttribute("data-index", index);
-                removeButton.onclick = function () {
-                    removerImagemNova(index);
+                    const removeButton = document.createElement("button");
+                    removeButton.innerHTML = "&times;";
+                    removeButton.classList.add("remove-btn");
+                    removeButton.setAttribute("data-index", index);
+                    removeButton.onclick = function () {
+                        removerImagemNova(index);
+                    };
+
+                    previewItem.appendChild(imgElement);
+                    previewItem.appendChild(removeButton);
+                    novasImagensContainer.appendChild(previewItem);
                 };
+                reader.readAsDataURL(arquivo);
+            });
 
-                previewItem.appendChild(imgElement);
-                previewItem.appendChild(removeButton);
-                previewContainer.appendChild(previewItem);
-            };
-            reader.readAsDataURL(arquivo);
-        });
-
-        atualizarInputArquivos();
-    }
-
-    function removerImagemNova(index) {
-        imagensSelecionadas.splice(index, 1); // Remove do array
-        atualizarPreview(); // Atualiza a visualização e o input de arquivos
-    }
-
-    function atualizarPreview() {
-        previewContainer.innerHTML = ""; // Mantemos a estrutura, mas preservamos as imagens existentes
-
-        // Adicionar as imagens já existentes (não removidas)
-        document.querySelectorAll(".preview-item").forEach(item => {
-            previewContainer.appendChild(item);
-        });
-
-        // Adicionar novas imagens
-        imagensSelecionadas.forEach((arquivo, index) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const previewItem = document.createElement("div");
-                previewItem.classList.add("preview-item");
-
-                const imgElement = document.createElement("img");
-                imgElement.src = e.target.result;
-
-                const removeButton = document.createElement("button");
-                removeButton.innerHTML = "&times;";
-                removeButton.classList.add("remove-btn");
-                removeButton.setAttribute("data-index", index);
-                removeButton.onclick = function () {
-                    removerImagemNova(index);
-                };
-
-                previewItem.appendChild(imgElement);
-                previewItem.appendChild(removeButton);
-                previewContainer.appendChild(previewItem);
-            };
-            reader.readAsDataURL(arquivo);
-        });
-
-        atualizarInputArquivos();
-    }
-
-    function atualizarInputArquivos() {
-        const dataTransfer = new DataTransfer();
-        imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
-        fotosInput.files = dataTransfer.files; // Atualiza o campo de input
-    }
-
-    window.removerImagemExistente = function (botao, caminho) {
-        if (confirm("Tem certeza que deseja remover esta imagem?")) {
-            botao.parentElement.remove();
-
-            let inputExcluidas = document.getElementById('imagens_excluidas');
-            let nomeArquivo = caminho.split('/').pop();
-            let imagensExcluidas = inputExcluidas.value ? inputExcluidas.value.split(',') : [];
-            imagensExcluidas.push(nomeArquivo);
-            inputExcluidas.value = imagensExcluidas.join(',');
+            atualizarInputArquivos();
         }
-    };
 
-    document.getElementById('form-editar').addEventListener('submit', function () {
-        const btnSubmit = document.getElementById('btnSubmit');
-        const spinner = document.getElementById('spinner');
-        spinner.style.display = 'inline-block';
-        btnSubmit.disabled = true;
+        function removerImagemNova(index) {
+            imagensSelecionadas.splice(index, 1);
+            adicionarNovasImagens();
+        }
+
+        function atualizarInputArquivos() {
+            const dataTransfer = new DataTransfer();
+            imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
+            fotosInput.files = dataTransfer.files;
+        }
+
+        window.removerImagemExistente = function (botao, caminho) {
+            if (confirm("Tem certeza que deseja remover esta imagem?")) {
+                botao.parentElement.remove();
+
+                let inputExcluidas = document.getElementById('imagens_excluidas');
+                let nomeArquivo = caminho.split('/').pop();
+                let imagensExcluidas = inputExcluidas.value ? inputExcluidas.value.split(',') : [];
+                imagensExcluidas.push(nomeArquivo);
+                inputExcluidas.value = imagensExcluidas.join(',');
+            }
+        };
+
+        document.getElementById('form-editar').addEventListener('submit', function () {
+            const btnSubmit = document.getElementById('btnSubmit');
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+            btnSubmit.disabled = true;
+        });
     });
-});
-
 </script>
 </body>
 </html>
