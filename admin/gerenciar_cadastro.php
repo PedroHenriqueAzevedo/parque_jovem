@@ -67,8 +67,11 @@ if (isset($_POST['gerar_pdf'])) {
     $pdf->SetFont('Arial', '', 10);
     $fill = false;
 
-    // Loop para gerar cada linha do PDF
-    foreach ($cadastros as $c) {
+   foreach ($cadastros as $c) {
+    $repetir = true;
+    while ($repetir) {
+        $repetir = false;
+
         $pdf->SetFillColor($fill ? 245 : 220);
         $pdf->SetTextColor(0);
 
@@ -77,14 +80,38 @@ if (isset($_POST['gerar_pdf'])) {
 
         // Prepara conteúdo
         $nome = iconv('UTF-8', 'windows-1252', $c['nome']);
+        $telefone = iconv('UTF-8', 'windows-1252', $c['telefone']);
+        $tipoCadastro = iconv('UTF-8', 'windows-1252', $c['tipo_cadastro']);
+        $adventista = iconv('UTF-8', 'windows-1252', $c['adventista']);
         $igreja = iconv('UTF-8', 'windows-1252', ($c['igreja'] !== null && trim($c['igreja']) !== '') ? $c['igreja'] : '-');
 
-        // Calcula número de linhas que nome e igreja precisam
+        // Calcula número de linhas
         $linhasNome = ceil($pdf->GetStringWidth($nome) / ($larguras[1] - 2));
+        $linhasTipo = ceil($pdf->GetStringWidth($tipoCadastro) / ($larguras[3] - 2));
         $linhasIgreja = ceil($pdf->GetStringWidth($igreja) / ($larguras[5] - 2));
-        $linhas = max(1, max($linhasNome, $linhasIgreja));
+        $linhas = max(1, $linhasNome, $linhasTipo, $linhasIgreja);
+
         $alturaTotal = $linhas * $alturaLinha;
 
+        // Se ultrapassar limite da página
+        if ($pdf->GetY() + $alturaTotal > 270) {
+            $pdf->AddPage();
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->SetFillColor(100, 149, 237);
+            $pdf->SetTextColor(255);
+            $pdf->Cell(10, 10, 'ID', 1, 0, 'C', true);
+            $pdf->Cell(40, 10, 'Nome', 1, 0, 'C', true);
+            $pdf->Cell(30, 10, 'Telefone', 1, 0, 'C', true);
+            $pdf->Cell(50, 10, 'Tipo', 1, 0, 'C', true);
+            $pdf->Cell(20, 10, 'Advent.', 1, 0, 'C', true);
+            $pdf->Cell(40, 10, 'Igreja', 1, 1, 'C', true);
+            $pdf->SetFont('Arial', '', 10);
+
+            $repetir = true; // Redesenhar o mesmo cadastro
+            continue;
+        }
+
+        // Posição inicial
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
@@ -96,19 +123,24 @@ if (isset($_POST['gerar_pdf'])) {
         $pdf->SetXY($x + $larguras[0], $y);
         if ($linhasNome > 1) {
             $pdf->MultiCell($larguras[1], $alturaLinha, $nome, 1, 'L', $fill);
+            $pdf->SetXY($x + $larguras[0] + $larguras[1], $y); // Reposiciona
         } else {
             $pdf->Cell($larguras[1], $alturaTotal, $nome, 1, 0, 'L', $fill);
         }
 
         // Telefone
-        $pdf->SetXY($x + $larguras[0] + $larguras[1], $y);
-        $pdf->Cell($larguras[2], $alturaTotal, iconv('UTF-8', 'windows-1252', $c['telefone']), 1, 0, 'L', $fill);
+        $pdf->Cell($larguras[2], $alturaTotal, $telefone, 1, 0, 'L', $fill);
 
-        // Tipo
-        $pdf->Cell($larguras[3], $alturaTotal, iconv('UTF-8', 'windows-1252', $c['tipo_cadastro']), 1, 0, 'L', $fill);
+        // Tipo de Cadastro
+        if ($linhasTipo > 1) {
+            $pdf->MultiCell($larguras[3], $alturaLinha, $tipoCadastro, 1, 'L', $fill);
+            $pdf->SetXY($x + $larguras[0] + $larguras[1] + $larguras[2] + $larguras[3], $y);
+        } else {
+            $pdf->Cell($larguras[3], $alturaTotal, $tipoCadastro, 1, 0, 'L', $fill);
+        }
 
         // Adventista
-        $pdf->Cell($larguras[4], $alturaTotal, iconv('UTF-8', 'windows-1252', $c['adventista']), 1, 0, 'C', $fill);
+        $pdf->Cell($larguras[4], $alturaTotal, $adventista, 1, 0, 'C', $fill);
 
         // Igreja
         $pdf->SetXY($x + array_sum($larguras) - $larguras[5], $y);
@@ -118,14 +150,28 @@ if (isset($_POST['gerar_pdf'])) {
             $pdf->Cell($larguras[5], $alturaTotal, $igreja, 1, 1, 'L', $fill);
         }
 
+        // Atualiza Y para a próxima linha
         $pdf->SetY($y + $alturaTotal);
         $fill = !$fill;
     }
+}
+
+    
+    
     $pdf->Output();
     exit;
 }
 ?>
-
+  <style>
+        body {
+            background-image: url('../assets/images/image.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+    
+    </style>
 <?php 
 include '../cabecalho/header.php'; 
 include '../conexao/conexao.php';
