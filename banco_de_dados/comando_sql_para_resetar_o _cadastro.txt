@@ -1,0 +1,8 @@
+-- Apagar todos os registros da tabela
+DELETE FROM cadastros_jovens;
+
+-- Resetar o AUTO_INCREMENT para começar do 1 novamente
+ALTER TABLE cadastros_jovens AUTO_INCREMENT = 1;
+
+
+TRUNCATE TABLE cadastros_jovens;
