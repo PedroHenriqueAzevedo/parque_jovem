@@ -41,7 +41,6 @@ $arquivos = buscarArquivosSabatina();
         .modal-content {
             max-width: 100%;
         }
-      
         body {
             background-image: url('../../assets/images/image.jpg');
             background-size: cover;
@@ -49,7 +48,6 @@ $arquivos = buscarArquivosSabatina();
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
-    
     </style>
 </head>
 <body>
@@ -96,8 +94,10 @@ $arquivos = buscarArquivosSabatina();
                             <a href="../../<?= htmlspecialchars($arquivo['arquivo']) ?>" target="_blank" class="btn btn-info btn-sm">Visualizar</a>
                         </td>
                         <td>
-                            <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
+                            <div class="d-flex gap-2">
+                                <a href="editar.php?id=<?= $arquivo['id'] ?>" class="btn btn-warning btn-sm flex-fill">Editar</a>
+                                <a href="#" class="btn btn-danger btn-sm flex-fill" onclick="confirmDelete(<?= $arquivo['id'] ?>)">Excluir</a>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>

@@ -167,10 +167,13 @@ body {
                                     </button>
                                 </div>
                             </td>
-                            <td>
-                                <a href="editar.php?id=<?= $projeto['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="#" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $projeto['id'] ?>)">Excluir</a>
-                            </td>
+                           <td>
+    <div class="d-flex gap-2">
+        <a href="editar.php?id=<?= $projeto['id'] ?>" class="btn btn-warning btn-sm flex-fill text-center">Editar</a>
+        <a href="#" class="btn btn-danger btn-sm flex-fill text-center" onclick="confirmDelete(<?= $projeto['id'] ?>)">Excluir</a>
+    </div>
+</td>
+
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

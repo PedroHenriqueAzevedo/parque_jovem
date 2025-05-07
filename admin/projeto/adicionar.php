@@ -24,7 +24,6 @@ $imagensExistentes = [];
 if ($projeto_id) {
     include(__DIR__ . './conexao/conexao.php');
 
-
     $stmt = $conexao->prepare("SELECT id, caminho FROM projetos_fotos WHERE projeto_id = :projeto_id");
     $stmt->bindParam(':projeto_id', $projeto_id, PDO::PARAM_INT);
     $stmt->execute();
@@ -78,6 +77,7 @@ if ($projeto_id) {
             align-items: center;
             justify-content: center;
         }
+
         body {
             background-image: url('../../assets/images/image.jpg');
             background-size: cover;
@@ -85,7 +85,6 @@ if ($projeto_id) {
             background-attachment: fixed;
             background-repeat: no-repeat;
         }
-   
     </style>
 </head>
 <?php include '../../cabecalho/header.php'; ?>
@@ -113,14 +112,13 @@ if ($projeto_id) {
             </div>
             <div class="mb-3">
                 <label for="conteudo" class="form-label">Descrição:</label>
-                <textarea name="conteudo" id="conteudo" class="form-control" rows="4" required></textarea>
+                <textarea name="conteudo" id="conteudo" class="form-control" rows="4" required oninput="autoResize(this)"></textarea>
             </div>
             <div class="mb-3">
                 <label for="fotos" class="form-label">Selecionar Imagens:</label>
                 <input type="file" name="fotos[]" id="fotos" class="form-control" accept="image/*" multiple>
                 <small class="text-muted">Você pode selecionar várias imagens.</small>
                 <div id="preview-container" class="preview-container">
-                    <!-- Exibir imagens já existentes -->
                     <?php foreach ($imagensExistentes as $imagem): ?>
                         <div class="preview-item">
                             <img src="../../<?= htmlspecialchars($imagem['caminho']) ?>" alt="Imagem">
@@ -141,78 +139,81 @@ if ($projeto_id) {
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 <script>
-    
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const fotosInput = document.getElementById('fotos');
-    const previewContainer = document.getElementById('preview-container');
-    const inputExcluidas = document.getElementById('imagens_excluidas');
-
-    let imagensSelecionadas = [];
-    let imagensExcluidas = [];
-
-    fotosInput.addEventListener('change', function (event) {
-        const arquivos = Array.from(event.target.files);
-
-        arquivos.forEach((arquivo) => {
-            if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
-                imagensSelecionadas.push(arquivo);
-            }
-        });
-
-        atualizarPreview();
-    });
-
-    function atualizarPreview() {
-        previewContainer.innerHTML = "";
-
-        imagensSelecionadas.forEach((arquivo, index) => {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const previewItem = document.createElement("div");
-                previewItem.classList.add("preview-item");
-
-                const imgElement = document.createElement("img");
-                imgElement.src = e.target.result;
-
-                const removeButton = document.createElement("button");
-                removeButton.innerHTML = "&times;";
-                removeButton.classList.add("remove-btn");
-                removeButton.onclick = function () {
-                    imagensSelecionadas.splice(index, 1);
-                    atualizarPreview();
-                };
-
-                previewItem.appendChild(imgElement);
-                previewItem.appendChild(removeButton);
-                previewContainer.appendChild(previewItem);
-            };
-            reader.readAsDataURL(arquivo);
-        });
-
-        const dataTransfer = new DataTransfer();
-        imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
-        fotosInput.files = dataTransfer.files;
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
     }
 
-    window.removerImagemExistente = function (botao, caminho) {
-        if (confirm("Tem certeza que deseja remover esta imagem?")) {
-            botao.parentElement.remove();
+    document.addEventListener('DOMContentLoaded', function () {
+        const fotosInput = document.getElementById('fotos');
+        const previewContainer = document.getElementById('preview-container');
+        const inputExcluidas = document.getElementById('imagens_excluidas');
+        const textarea = document.getElementById('conteudo');
+        if (textarea) autoResize(textarea);
 
-            let nomeArquivo = caminho.split('/').pop();
-            imagensExcluidas.push(nomeArquivo);
-            inputExcluidas.value = imagensExcluidas.join(',');
+        let imagensSelecionadas = [];
+        let imagensExcluidas = [];
+
+        fotosInput.addEventListener('change', function (event) {
+            const arquivos = Array.from(event.target.files);
+
+            arquivos.forEach((arquivo) => {
+                if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
+                    imagensSelecionadas.push(arquivo);
+                }
+            });
+
+            atualizarPreview();
+        });
+
+        function atualizarPreview() {
+            previewContainer.innerHTML = "";
+
+            imagensSelecionadas.forEach((arquivo, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const previewItem = document.createElement("div");
+                    previewItem.classList.add("preview-item");
+
+                    const imgElement = document.createElement("img");
+                    imgElement.src = e.target.result;
+
+                    const removeButton = document.createElement("button");
+                    removeButton.innerHTML = "&times;";
+                    removeButton.classList.add("remove-btn");
+                    removeButton.onclick = function () {
+                        imagensSelecionadas.splice(index, 1);
+                        atualizarPreview();
+                    };
+
+                    previewItem.appendChild(imgElement);
+                    previewItem.appendChild(removeButton);
+                    previewContainer.appendChild(previewItem);
+                };
+                reader.readAsDataURL(arquivo);
+            });
+
+            const dataTransfer = new DataTransfer();
+            imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
+            fotosInput.files = dataTransfer.files;
         }
-    };
 
-    document.getElementById('formAdicionar').addEventListener('submit', function () {
-        const btnSubmit = document.getElementById('btnSubmit');
-        const spinner = document.getElementById('spinner');
-        spinner.style.display = 'inline-block';
-        btnSubmit.disabled = true;
+        window.removerImagemExistente = function (botao, caminho) {
+            if (confirm("Tem certeza que deseja remover esta imagem?")) {
+                botao.parentElement.remove();
+                let nomeArquivo = caminho.split('/').pop();
+                imagensExcluidas.push(nomeArquivo);
+                inputExcluidas.value = imagensExcluidas.join(',');
+            }
+        };
+
+        document.getElementById('formAdicionar').addEventListener('submit', function () {
+            const btnSubmit = document.getElementById('btnSubmit');
+            const spinner = document.getElementById('spinner');
+            spinner.style.display = 'inline-block';
+            btnSubmit.disabled = true;
+        });
     });
-});
-
 </script>
 </body>
 </html>

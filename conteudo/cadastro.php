@@ -91,6 +91,15 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
     $sucesso = true;
 }
 ?>
+<style>
+    body {
+        background-image: url('../assets/images/image.jpg');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+    }
+</style>
 
 <div class="container mt-5 mb-5">
     <div class="card shadow">
@@ -135,7 +144,6 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
                         <label class="form-label">O que você deseja?</label>
                         <select class="form-select" name="tipo_cadastro" required>
                             <option value="">Selecione</option>
-                            <option value="Tenho interesse em me batizar">Tenho interesse em me batizar</option>
                             <option value="Quero oração">Quero oração</option>
                             <option value="Quero participar da classe bíblica">Quero participar da classe bíblica</option>
                         </select>
@@ -144,18 +152,34 @@ if (isset($_GET['id']) && isset($_GET['nome'])) {
                     <div class="mb-3">
                         <label class="form-label">Você é da Igreja Adventista?</label><br>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="adventista" value="Sim" required onclick="document.getElementById('campo_igreja').style.display='block'">
+                            <input class="form-check-input" type="radio" name="adventista" value="Sim" required onclick="mostrarCampoIgreja(true)">
                             <label class="form-check-label">Sim</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="adventista" value="Não" required onclick="document.getElementById('campo_igreja').style.display='none'">
+                            <input class="form-check-input" type="radio" name="adventista" value="Não" required onclick="mostrarCampoIgreja(false)">
                             <label class="form-check-label">Não</label>
                         </div>
                     </div>
 
                     <div class="mb-3" id="campo_igreja" style="display:none;">
                         <label class="form-label">Qual igreja?</label>
-                        <input type="text" class="form-control" name="igreja">
+                        <select class="form-select" name="igreja" id="select_igreja" disabled>
+                            <option value="">Selecione uma igreja</option>
+                            <option value="IASD Parque Flamboyant">IASD Parque Flamboyant</option>
+                            <option value="IASD Setor Sul">IASD Setor Sul</option>
+                            <option value="IASD Lago Azul">IASD Lago Azul</option>
+                            <option value="IASD Central">IASD Central</option>
+                            <option value="IASD Jardim Pompeia">IASD Jardim Pompeia</option>
+                            <option value="IASD Vila Nova">IASD Vila Nova</option>
+                            <option value="IASD Setor Pedro Ludovico">IASD Setor Pedro Ludovico</option>
+                            <option value="IASD Parque Amazônia">IASD Parque Amazônia</option>
+                            <option value="IASD Coimbra">IASD Coimbra</option>
+                            <option value="IASD Palmito">IASD Palmito</option>
+                            <option value="IASD Universitário">IASD Universitário</option>
+                            <option value="IASD Bueno">IASD Bueno</option>
+                            <option value="IASD Vila Brasília">IASD Vila Brasília</option>
+                            <option value="Outra">Outra</option>
+                        </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Enviar</button>
@@ -238,6 +262,22 @@ if (nomeSalvo && idSalvo && !window.location.search.includes('id=')) {
 function mostrarBusca() {
     document.getElementById('form-cadastro').style.display = 'none';
     document.getElementById('busca-cadastro').style.display = 'block';
+}
+
+function mostrarCampoIgreja(mostrar) {
+    const campo = document.getElementById('campo_igreja');
+    const select = document.getElementById('select_igreja');
+
+    if (mostrar) {
+        campo.style.display = 'block';
+        select.disabled = false;
+        select.setAttribute('required', 'required');
+    } else {
+        campo.style.display = 'none';
+        select.disabled = true;
+        select.removeAttribute('required');
+        select.value = '';
+    }
 }
 </script>
 

@@ -51,19 +51,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 10px;
-            width: 100%;
-            justify-content: flex-start;
         }
 
         .preview-item {
-            flex: 0 0 auto;
-            width: 120px;
-            height: 120px;
+            position: relative;
+            width: 100px;
+            height: 100px;
             border-radius: 8px;
             overflow: hidden;
-            position: relative;
-            background-color: #f8f9fa;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
 
         .preview-item img {
@@ -122,26 +117,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="conteudo" class="form-label">Descrição:</label>
-                <textarea name="conteudo" id="conteudo" class="form-control" rows="4" required><?= htmlspecialchars($projeto['conteudo']) ?></textarea>
+                <textarea name="conteudo" id="conteudo" class="form-control" rows="4" required oninput="autoResize(this)"><?= htmlspecialchars($projeto['conteudo']) ?></textarea>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Imagens do Projeto:</label>
-                <div class="preview-container" id="preview-container">
+                <div id="preview-container" class="preview-container">
                     <?php foreach ($imagensExistentes as $imagem): ?>
                         <div class="preview-item">
                             <img src="../../<?= htmlspecialchars($imagem) ?>" alt="Imagem">
                             <button type="button" class="remove-btn" onclick="removerImagemExistente(this, '<?= $imagem ?>')">&times;</button>
                         </div>
                     <?php endforeach; ?>
-                    <div id="novas-imagens"></div>
                 </div>
             </div>
+
             <div class="mb-3">
                 <label for="fotos" class="form-label">Adicionar Novas Imagens:</label>
                 <input type="file" name="fotos[]" id="fotos" class="form-control" accept="image/*" multiple>
                 <small class="text-muted">As imagens adicionadas serão somadas às existentes.</small>
             </div>
+
             <input type="hidden" name="imagens_excluidas" id="imagens_excluidas">
+
             <button type="submit" class="btn btn-primary w-100" id="btnSubmit">
                 <span id="spinner" class="spinner-border spinner-border-sm me-2" style="display: none;" role="status" aria-hidden="true"></span>
                 Salvar
@@ -149,27 +147,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 </div>
+
 <?php include '../../cabecalho/footer_ad.php'; ?>
 <script src="../../assets/js/bootstrap.bundle.min.js"></script>
 <script>
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const fotosInput = document.getElementById('fotos');
         const previewContainer = document.getElementById('preview-container');
-        const novasImagensContainer = document.getElementById('novas-imagens');
+        const inputExcluidas = document.getElementById('imagens_excluidas');
+        const textarea = document.getElementById('conteudo');
+        if (textarea) autoResize(textarea);
+
         let imagensSelecionadas = [];
+        let imagensExcluidas = [];
 
         fotosInput.addEventListener('change', function (event) {
             const arquivos = Array.from(event.target.files);
+
             arquivos.forEach((arquivo) => {
                 if (!imagensSelecionadas.some(img => img.name === arquivo.name)) {
                     imagensSelecionadas.push(arquivo);
                 }
             });
-            adicionarNovasImagens();
+
+            atualizarPreview();
         });
 
-        function adicionarNovasImagens() {
-            novasImagensContainer.innerHTML = '';
+        function atualizarPreview() {
+            const imagensFixas = Array.from(previewContainer.querySelectorAll('.preview-item img'))
+                .filter(img => !img.src.startsWith('data:'))
+                .map(img => img.closest('.preview-item'));
+
+            previewContainer.innerHTML = "";
+            imagensFixas.forEach(item => previewContainer.appendChild(item));
 
             imagensSelecionadas.forEach((arquivo, index) => {
                 const reader = new FileReader();
@@ -185,40 +200,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     removeButton.classList.add("remove-btn");
                     removeButton.setAttribute("data-index", index);
                     removeButton.onclick = function () {
-                        removerImagemNova(index);
+                        imagensSelecionadas.splice(index, 1);
+                        atualizarPreview();
                     };
 
                     previewItem.appendChild(imgElement);
                     previewItem.appendChild(removeButton);
-                    novasImagensContainer.appendChild(previewItem);
+                    previewContainer.appendChild(previewItem);
                 };
                 reader.readAsDataURL(arquivo);
             });
 
-            atualizarInputArquivos();
-        }
-
-        function removerImagemNova(index) {
-            imagensSelecionadas.splice(index, 1);
-            adicionarNovasImagens();
-        }
-
-        function atualizarInputArquivos() {
             const dataTransfer = new DataTransfer();
             imagensSelecionadas.forEach((arquivo) => dataTransfer.items.add(arquivo));
             fotosInput.files = dataTransfer.files;
         }
 
         window.removerImagemExistente = function (botao, caminho) {
-            if (confirm("Tem certeza que deseja remover esta imagem?")) {
-                botao.parentElement.remove();
-
-                let inputExcluidas = document.getElementById('imagens_excluidas');
-                let nomeArquivo = caminho.split('/').pop();
-                let imagensExcluidas = inputExcluidas.value ? inputExcluidas.value.split(',') : [];
-                imagensExcluidas.push(nomeArquivo);
-                inputExcluidas.value = imagensExcluidas.join(',');
-            }
+            botao.parentElement.remove();
+            let nomeArquivo = caminho.split('/').pop();
+            imagensExcluidas.push(nomeArquivo);
+            inputExcluidas.value = imagensExcluidas.join(',');
         };
 
         document.getElementById('form-editar').addEventListener('submit', function () {
