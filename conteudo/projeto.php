@@ -1,13 +1,11 @@
 <?php
-include(__DIR__ . '/../conexao/conexao.php'); // Conexão com o banco de dados
+include(__DIR__ . '/../conexao/conexao.php');
 
 try {
-    // Consulta para buscar os projetos
     $stmt = $conexao->prepare("SELECT * FROM projetos ORDER BY id DESC");
     $stmt->execute();
     $projetos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Buscar imagens associadas a cada projeto
     foreach ($projetos as $key => $projeto) {
         $stmtFotos = $conexao->prepare("SELECT caminho FROM projetos_fotos WHERE projeto_id = :projeto_id");
         $stmtFotos->bindParam(':projeto_id', $projeto['id'], PDO::PARAM_INT);
@@ -34,16 +32,21 @@ try {
             position: relative;
             transition: max-height 0.3s ease;
         }
+
         .ver-mais-menos {
             cursor: pointer;
             color: blue;
             font-weight: bold;
             display: none;
         }
-        .card-img-top, .carousel-inner img {
+
+        /* Ajuste ideal: imagem quadrada, sem bordas brancas, sem distorção */
+        .card-img-top,
+        .carousel-inner img {
             width: 100%;
-            height: 180px;
+            aspect-ratio: 1 / 1;
             object-fit: cover;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -107,7 +110,7 @@ try {
             toggle.textContent = "Ver menos";
         }
     }
-    
+
     document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll('.descricao-container').forEach(container => {
             const toggleButton = container.nextElementSibling;
