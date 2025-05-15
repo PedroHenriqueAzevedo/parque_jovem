@@ -32,7 +32,7 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
             <a href="index.php">
-                <img src="/assets/images/logo.png" alt="Logo Parque Jovem" class="header-logo">
+                <img src="/parque_jovem/assets/images/logo.png" alt="Logo Parque Jovem" class="header-logo">
             </a>
             <h1 class="brand-title text-center flex-grow-1 m-0">Parque Jovem</h1>
         </div>

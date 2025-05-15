@@ -31,7 +31,7 @@
 
         <!-- Link para o Painel Administrativo -->
         <div class="mt-3">
-            <a href="/index.php" class="text-white text-decoration-none">
+            <a href="../index.php" class="text-white text-decoration-none">
                 Página Principal do Site
             </a>
         </div>
