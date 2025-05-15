@@ -2,12 +2,12 @@
     <!-- Seu conteúdo aqui -->
 </div>
 
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-<footer class="bg-dark text-white py-4 mt-auto" style="margin-top: 100px;">
+
+<footer class="bg-parque-jovem text-white py-4 mt-auto" style="margin-top: 100px;">
     <div class="container text-center">
         <p>&copy; <?php echo date('Y'); ?> Parque Jovem. Todos os direitos reservados.</p>
-        
+
         <!-- Links para redes sociais -->
         <div class="mt-3">
             <a href="https://www.instagram.com/parquejovem" target="_blank" class="text-white mx-2 text-decoration-none">
@@ -31,9 +31,15 @@
 
         <!-- Link para o Painel Administrativo -->
         <div class="mt-3">
-            <a href="/parque_jovem/index.php" class="text-white mx-2 text-decoration-none">
-                <i style="font-size: 1.5rem;"></i> Página Principal Do Site 
+            <a href="/index.php" class="text-white text-decoration-none">
+                Página Principal do Site
             </a>
         </div>
     </div>
 </footer>
+
+<style>
+    .bg-parque-jovem {
+        background-color: #2D8C28; /* Verde oficial do site */
+    }
+</style>

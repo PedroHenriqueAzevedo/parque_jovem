@@ -20,21 +20,20 @@
 <body>
 
 <div class="container text-center mt-4">
-    <div class="d-flex justify-content-center gap-2 flex-wrap">
-        <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg" target="_blank">
+    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <a href="https://pesquisa.biblia.com.br/pt-BR/AA/" class="btn btn-primary btn-lg flex-fill flex-sm-grow-0" style="min-width: 250px;" target="_blank">
             <i class="bi bi-book"></i> Acesse a Bíblia Online
         </a>
-        <a href="https://chat.whatsapp.com/HzdQKz9R2jZ1OSWUM2Mwfx" class="btn btn-success btn-lg" target="_blank">
+        <a href="https://chat.whatsapp.com/HzdQKz9R2jZ1OSWUM2Mwfx" class="btn btn-success btn-lg flex-fill flex-sm-grow-0" style="min-width: 250px;" target="_blank">
             <i class="bi bi-whatsapp"></i> Entre no Grupo do Parque Jovem
         </a>
-        <a href="./conteudo/livro.php" class="btn btn-warning btn-lg">
+        <a href="./conteudo/livro.php" class="btn btn-warning btn-lg flex-fill flex-sm-grow-0" style="min-width: 250px;">
             <i class="bi bi-file-earmark-pdf"></i> Autêntico - Devocional Jovem 2025
         </a>
-        <a href="./conteudo/arquivo_sabatina.php" class="btn btn-info btn-lg">
+        <a href="./conteudo/arquivo_sabatina.php" class="btn btn-info btn-lg flex-fill flex-sm-grow-0" style="min-width: 250px;">
             <i class="bi bi-journal-bookmark"></i> Lição Escola Sabatina
         </a>
-        <!-- Novo botão para Cadastro de Jovens -->
-        <a href="./conteudo/cadastro.php" class="btn btn-secondary btn-lg">
+        <a href="./conteudo/cadastro.php" class="btn btn-secondary btn-lg flex-fill flex-sm-grow-0" style="min-width: 250px;">
             <i class="bi bi-person-plus"></i> Quero me cadastrar
         </a>
     </div>

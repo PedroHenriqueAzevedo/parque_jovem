@@ -87,6 +87,13 @@ try {
 <body>
 
 <div class="container">
+   
+    <!-- BOTÃO VOLTAR AQUI -->
+    <div class="mt-4 mb-3">
+        <a href="../index.php" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
     <h2 class="text-center mt-4">Arquivos da Escola Sabatina</h2>
     
     <?php if ($arquivos): ?>
