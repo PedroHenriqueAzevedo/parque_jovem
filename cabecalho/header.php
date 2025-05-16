@@ -6,7 +6,7 @@
     <title><?php echo $pageTitle ?? 'Parque Jovem'; ?></title>
 
     <!-- Favicon -->
-    <link rel="icon" href="/assets/images/logo.png" type="image/png">
+    <link rel="icon" href="/parque_jovem/assets/images/logo.png" type="image/png">
 
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">

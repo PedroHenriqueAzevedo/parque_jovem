@@ -1,0 +1,1 @@
+A parte de cadastro esta com o front e backend junto pois foi feito junto e quando foi separar deu erro entao deixei junto, no admin no gerencar o backend esta junto tambem esse codigo esta difernte na hostinger pois o codigo daqui nao funciona na hostinger e o da hostinger não funciona aqui. 
