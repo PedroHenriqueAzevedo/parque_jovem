@@ -161,6 +161,61 @@ if (isset($_POST['gerar_pdf'])) {
     $pdf->Output();
     exit;
 }
+
+if (isset($_POST['gerar_csv'])) {
+    include '../conexao/conexao.php';
+
+    $filtro_id   = $_POST['id'] ?? '';
+    $filtro_nome = $_POST['nome'] ?? '';
+    $filtro_tipo = $_POST['tipo_cadastro'] ?? '';
+
+    $query = "SELECT * FROM cadastros_jovens WHERE 1";
+    $params = [];
+
+    if (!empty($filtro_id)) {
+        $query .= " AND id = ?";
+        $params[] = $filtro_id;
+    }
+    if (!empty($filtro_nome)) {
+        $query .= " AND nome LIKE ?";
+        $params[] = "%$filtro_nome%";
+    }
+    if (!empty($filtro_tipo)) {
+        $query .= " AND tipo_cadastro = ?";
+        $params[] = $filtro_tipo;
+    }
+
+    $query .= " ORDER BY id ASC";
+    $stmt = $conexao->prepare($query);
+    $stmt->execute($params);
+    $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Cabeçalhos para download do CSV com codificação ISO-8859-1
+    header('Content-Type: text/csv; charset=ISO-8859-1');
+    header('Content-Disposition: attachment; filename="cadastros.csv"');
+    header('Cache-Control: private, max-age=0, must-revalidate');
+    header('Pragma: public');
+
+    $output = fopen('php://output', 'w');
+
+    // Escreve cabeçalhos
+    fputcsv($output, ['ID', 'Nome', 'Telefone', 'Tipo de Cadastro', 'Adventista?', 'Igreja', 'Data'], ';');
+
+    foreach ($cadastros as $c) {
+        fputcsv($output, [
+            $c['id'],
+            utf8_decode($c['nome']),
+            utf8_decode($c['telefone']),
+            utf8_decode($c['tipo_cadastro']),
+            utf8_decode($c['adventista']),
+            utf8_decode($c['igreja'] ?? '-'),
+            date('d/m/Y', strtotime($c['data_cadastro']))
+        ], ';');
+    }
+
+    fclose($output);
+    exit;
+}
 ?>
   <style>
         body {
@@ -239,12 +294,29 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div class="col-md-2">
         <button type="submit" class="btn btn-primary w-100">Filtrar</button>
     </div>
+
+  <!-- Botão CSV -->
+<div class="col-md-2">
+    <button type="submit" form="csvForm" class="btn btn-success w-100">
+        <i class="bi bi-file-earmark-excel"></i> Gerar Planilha
+    </button>
+</div>
+
+
     <!-- Botão PDF com mesma altura e largura -->
     <div class="col-md-2">
         <button type="submit" form="pdfForm" class="btn btn-danger w-100">
             <i class="bi bi-file-earmark-pdf"></i> Gerar PDF
         </button>
     </div>
+</form>
+
+<!-- Formulário oculto para o CSV -->
+<form method="POST" id="csvForm">
+    <input type="hidden" name="id" value="<?= htmlspecialchars($filtro_id) ?>">
+    <input type="hidden" name="nome" value="<?= htmlspecialchars($filtro_nome) ?>">
+    <input type="hidden" name="tipo_cadastro" value="<?= htmlspecialchars($filtro_tipo) ?>">
+    <input type="hidden" name="gerar_csv" value="1">
 </form>
 
 <!-- Formulário oculto para o PDF -->
