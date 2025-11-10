@@ -1,6 +1,6 @@
 <?php
 include '../conexao/conexao.php';
-include '../cabecalho/header.php';
+include '../cabecalho/header_acampamento.php';
 
 // Fuso horário de São Paulo (importante para Hostinger)
 date_default_timezone_set('America/Sao_Paulo');
@@ -224,4 +224,4 @@ cepInput.addEventListener('input', e => {
 });
 </script>
 
-<?php include '../cabecalho/footer.php'; ?>
+<?php include '../cabecalho/footer_acampamento.php'; ?>
