@@ -31,3 +31,19 @@ CREATE TABLE cadastros_jovens (
     igreja VARCHAR(255),
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE inscricoes_acampamento (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL UNIQUE,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    data_nascimento DATE NOT NULL,
+    telefone VARCHAR(15) NOT NULL UNIQUE,
+    igreja VARCHAR(100) NOT NULL,
+    cep VARCHAR(9) NOT NULL,
+    rua VARCHAR(150) NOT NULL,
+    numero VARCHAR(10) NOT NULL,
+    bairro VARCHAR(100) NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(2) NOT NULL,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

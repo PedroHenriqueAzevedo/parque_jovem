@@ -38,21 +38,29 @@ if (!isset($_SESSION['admin_logged_in'])) {
     <p>Bem-vindo ao painel administrativo. Escolha uma das opções abaixo:</p>
 
     <div class="d-grid gap-3 col-6 mx-auto">
-        
-        <a href="sabatina/listar.php" class="btn btn-success btn-lg">
-            <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
-        </a>
-        <a href="projeto/listar.php" class="btn btn-warning btn-lg"> 
-            <i class="bi bi-folder"></i> Gerenciar Projetos
-        </a>
-           <a href="../admin/gerenciar_cadastro.php" class="btn btn-primary btn-lg">
-            <i class="bi bi-people"></i> Gerenciar Cadastros de Jovens
-        </a>
-        <a href="../admin/logout.php" class="btn btn-danger btn-lg">
-            <i class="bi bi-box-arrow-right"></i> Sair
-        </a>
-      
-    </div>
+
+    <a href="sabatina/listar.php" class="btn btn-success btn-lg">
+        <i class="bi bi-journal"></i> Gerenciar Escola Sabatina
+    </a>
+
+    <a href="projeto/listar.php" class="btn btn-warning btn-lg"> 
+        <i class="bi bi-folder"></i> Gerenciar Projetos
+    </a>
+
+    <a href="../admin/gerenciar_cadastro.php" class="btn btn-primary btn-lg">
+        <i class="bi bi-people"></i> Gerenciar Cadastros de Jovens
+    </a>
+
+    <a href="../admin/gerenciar_acampamento.php" class="btn btn-info btn-lg">
+        <i class="bi bi-tree"></i> Gerenciar Inscrições do Acampamento
+    </a>
+
+    <a href="../admin/logout.php" class="btn btn-danger btn-lg">
+        <i class="bi bi-box-arrow-right"></i> Sair
+    </a>
+
+</div>
+
 </div>
 <?php include '../cabecalho/footer_ad.php'; ?>
 <script src="../assets/js/bootstrap.bundle.min.js"></script>
