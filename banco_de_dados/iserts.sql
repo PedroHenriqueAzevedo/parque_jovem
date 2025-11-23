@@ -61,3 +61,8 @@ ADD COLUMN acomodacao VARCHAR(100) NOT NULL AFTER igreja;
 
 ALTER TABLE inscricoes_acampamento
 ADD COLUMN responsavel_id INT NULL AFTER id;
+
+ALTER TABLE inscricoes_acampamento
+ADD forma_pagamento VARCHAR(20) NOT NULL AFTER acomodacao;
+TRUNCATE TABLE inscricoes_acampamento;
+
