@@ -31,10 +31,10 @@ if (isset($_POST['gerar_csv'])) {
 
     $output = fopen('php://output', 'w');
 
-    // Cabeçalho da planilha (sem acento em "Numero")
+    // Cabeçalho da planilha
     fputcsv($output, [
-        'ID', 'Nome', 'CPF', 'Data de Nascimento', 'Telefone', 'Igreja',
-        'CEP', 'Rua', 'Numero', 'Bairro', 'Cidade', 'UF', 'Data Cadastro'
+        'ID', 'Nome', 'CPF', 'Data de Nascimento', 'Telefone',
+        'Igreja', 'Acomodação', 'Data Cadastro'
     ], ';');
 
     // Linhas
@@ -46,12 +46,7 @@ if (isset($_POST['gerar_csv'])) {
             date('d/m/Y', strtotime($c['data_nascimento'])),
             utf8_decode($c['telefone']),
             utf8_decode($c['igreja']),
-            utf8_decode($c['cep']),
-            utf8_decode($c['rua']),
-            utf8_decode($c['numero']),
-            utf8_decode($c['bairro']),
-            utf8_decode($c['cidade']),
-            utf8_decode($c['estado']),
+            utf8_decode($c['acomodacao']),
             date('d/m/Y', strtotime($c['data_cadastro']))
         ], ';');
     }
@@ -107,10 +102,12 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <!-- Filtros -->
             <form method="GET" class="row g-3 align-items-end mb-3">
                 <div class="col-md-2">
-                    <input type="number" name="id" class="form-control" placeholder="Filtrar por ID" value="<?= htmlspecialchars($filtro_id) ?>">
+                    <input type="number" name="id" class="form-control" placeholder="Filtrar por ID"
+                           value="<?= htmlspecialchars($filtro_id) ?>">
                 </div>
                 <div class="col-md-3">
-                    <input type="text" name="nome" class="form-control" placeholder="Filtrar por nome" value="<?= htmlspecialchars($filtro_nome) ?>">
+                    <input type="text" name="nome" class="form-control" placeholder="Filtrar por nome"
+                           value="<?= htmlspecialchars($filtro_nome) ?>">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-primary w-100">Filtrar</button>
@@ -145,12 +142,7 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Data Nasc.</th>
                             <th>Telefone</th>
                             <th>Igreja</th>
-                            <th>CEP</th>
-                            <th>Rua</th>
-                            <th>Número</th>
-                            <th>Bairro</th>
-                            <th>Cidade</th>
-                            <th>UF</th>
+                            <th>Acomodação</th>
                             <th>Data Cad.</th>
                         </tr>
                     </thead>
@@ -164,22 +156,18 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= date('d/m/Y', strtotime($c['data_nascimento'])) ?></td>
                                     <td><?= htmlspecialchars($c['telefone']) ?></td>
                                     <td><?= htmlspecialchars($c['igreja']) ?></td>
-                                    <td><?= htmlspecialchars($c['cep']) ?></td>
-                                    <td><?= htmlspecialchars($c['rua']) ?></td>
-                                    <td><?= htmlspecialchars($c['numero']) ?></td>
-                                    <td><?= htmlspecialchars($c['bairro']) ?></td>
-                                    <td><?= htmlspecialchars($c['cidade']) ?></td>
-                                    <td><?= htmlspecialchars($c['estado']) ?></td>
+                                    <td><?= htmlspecialchars($c['acomodacao']) ?></td>
                                     <td><?= date('d/m/Y', strtotime($c['data_cadastro'])) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="13" class="text-center">Nenhuma inscrição encontrada.</td>
+                                <td colspan="8" class="text-center">Nenhuma inscrição encontrada.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
+
             </div>
         </div>
     </div>

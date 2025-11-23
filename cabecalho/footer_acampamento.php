@@ -9,12 +9,7 @@
         <p>&copy; <?php echo date('Y'); ?> Incriçoes acampamento de Verão . Todos os direitos reservados.</p>
         
   
-        <!-- Link para o Painel Administrativo -->
-        <div class="mt-3">
-            <a href="./admin/index.php" class="text-white mx-2 text-decoration-none">
-                <i class="bi bi-person-circle" style="font-size: 1.5rem;"></i> Painel Administrativo
-            </a>
-        </div>
+        
     </div>
 </footer>
 
