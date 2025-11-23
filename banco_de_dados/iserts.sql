@@ -47,3 +47,17 @@ CREATE TABLE inscricoes_acampamento (
     estado VARCHAR(2) NOT NULL,
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+ALTER TABLE inscricoes_acampamento
+DROP COLUMN cep,
+DROP COLUMN rua,
+DROP COLUMN numero,
+DROP COLUMN bairro,
+DROP COLUMN cidade,
+DROP COLUMN estado;
+
+ALTER TABLE inscricoes_acampamento
+ADD COLUMN acomodacao VARCHAR(100) NOT NULL AFTER igreja;
+
+ALTER TABLE inscricoes_acampamento
+ADD COLUMN responsavel_id INT NULL AFTER id;
