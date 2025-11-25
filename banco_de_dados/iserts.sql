@@ -48,6 +48,10 @@ CREATE TABLE inscricoes_acampamento (
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+
+
+
+
 ALTER TABLE inscricoes_acampamento
 DROP COLUMN cep,
 DROP COLUMN rua,
@@ -66,3 +70,19 @@ ALTER TABLE inscricoes_acampamento
 ADD forma_pagamento VARCHAR(20) NOT NULL AFTER acomodacao;
 TRUNCATE TABLE inscricoes_acampamento;
 
+ALTER TABLE inscricoes_acampamento 
+ADD COLUMN status_pagamento VARCHAR(30) NOT NULL DEFAULT 'Pendente';
+
+
+CREATE TABLE acomodacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    limite INT NOT NULL,
+    usado INT NOT NULL DEFAULT 0
+);
+
+INSERT INTO acomodacoes (nome, limite, usado) VALUES
+('Suíte 4 leitos', 16, 0),
+('Suíte 3 leitos', 3, 0),
+('Alojamento Coletivo', 73, 0),
+('Barraca', 9999, 0); -- ilimitado
