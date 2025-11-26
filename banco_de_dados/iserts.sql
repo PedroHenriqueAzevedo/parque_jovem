@@ -70,6 +70,13 @@ ALTER TABLE inscricoes_acampamento
 ADD forma_pagamento VARCHAR(20) NOT NULL AFTER acomodacao;
 TRUNCATE TABLE inscricoes_acampamento;
 
+
+
+
+
+
+
+
 ALTER TABLE inscricoes_acampamento 
 ADD COLUMN status_pagamento VARCHAR(30) NOT NULL DEFAULT 'Pendente';
 
@@ -86,3 +93,17 @@ INSERT INTO acomodacoes (nome, limite, usado) VALUES
 ('Suíte 3 leitos', 3, 0),
 ('Alojamento Coletivo', 73, 0),
 ('Barraca', 9999, 0); -- ilimitado
+
+UPDATE acomodacoes SET usado = (
+    SELECT COUNT(*) 
+    FROM inscricoes_acampamento 
+    WHERE 
+        CASE acomodacoes.nome
+            WHEN 'Suíte 4 leitos' THEN acomodacao LIKE 'Suíte 4 leitos%'
+            WHEN 'Suíte 3 leitos' THEN acomodacao LIKE 'Suíte 3 leitos%'
+            WHEN 'Alojamento Coletivo' THEN acomodacao LIKE 'Alojamento coletivo%'
+            WHEN 'Barraca' THEN acomodacao LIKE 'Barraca%'
+        END
+);
+INSERT INTO acomodacoes (nome, limite, usado) 
+VALUES ('Day Use', 9999, 0);

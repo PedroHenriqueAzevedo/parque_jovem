@@ -1,4 +1,20 @@
 <?php
+// ========================= UPDATE STATUS PAGAMENTO =========================
+if (isset($_POST['atualizar_status'])) {
+
+    include '../conexao/conexao.php';
+
+    $id = $_POST['id'] ?? 0;
+    $status = $_POST['status'] ?? '';
+
+    if ($id > 0 && $status !== '') {
+        $stmt = $conexao->prepare("UPDATE inscricoes_acampamento SET status_pagamento = ? WHERE id = ?");
+        $stmt->execute([$status, $id]);
+    }
+
+    exit;
+}
+
 // ========================= GERAR CSV =========================
 if (isset($_POST['gerar_csv'])) {
     include '../conexao/conexao.php';
@@ -23,22 +39,25 @@ if (isset($_POST['gerar_csv'])) {
     $stmt->execute($params);
     $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Cabeçalhos do arquivo CSV
     header('Content-Type: text/csv; charset=ISO-8859-1');
     header('Content-Disposition: attachment; filename="inscricoes_acampamento.csv"');
-    header('Cache-Control: private, max-age=0, must-revalidate');
-    header('Pragma: public');
-
     $output = fopen('php://output', 'w');
 
-    // Cabeçalho da planilha
     fputcsv($output, [
         'ID', 'Nome', 'CPF', 'Data de Nascimento', 'Telefone',
-        'Igreja', 'Acomodação', 'Data Cadastro'
+        'Igreja', 'Acomodação', 'Forma Pagamento', 'Status Pagamento', 'Responsável', 'Data Cadastro'
     ], ';');
 
-    // Linhas
     foreach ($cadastros as $c) {
+
+        if (!empty($c['responsavel_id'])) {
+            $stmt_resp = $conexao->prepare("SELECT nome FROM inscricoes_acampamento WHERE id = ?");
+            $stmt_resp->execute([$c['responsavel_id']]);
+            $responsavel_nome = $stmt_resp->fetchColumn();
+        } else {
+            $responsavel_nome = "É o responsável";
+        }
+
         fputcsv($output, [
             $c['id'],
             utf8_decode($c['nome']),
@@ -47,6 +66,9 @@ if (isset($_POST['gerar_csv'])) {
             utf8_decode($c['telefone']),
             utf8_decode($c['igreja']),
             utf8_decode($c['acomodacao']),
+            utf8_decode($c['forma_pagamento']),
+            utf8_decode($c['status_pagamento']),
+            utf8_decode($responsavel_nome),
             date('d/m/Y', strtotime($c['data_cadastro']))
         ], ';');
     }
@@ -69,6 +91,31 @@ body {
 include '../cabecalho/header.php'; 
 include '../conexao/conexao.php';
 
+// ========================= CONTADORES =========================
+
+// total permitido:
+$total_suite4 = 16;
+$total_suite3 = 3;
+$total_coletivo = 73;
+
+// contas:
+$cont_suite4 = $conexao->query("SELECT COUNT(*) FROM inscricoes_acampamento WHERE acomodacao='Suíte 4 leitos - R$ 2.000,00'")->fetchColumn();
+$cont_suite3 = $conexao->query("SELECT COUNT(*) FROM inscricoes_acampamento WHERE acomodacao='Suíte 3 leitos - R$ 1.500,00'")->fetchColumn();
+$cont_coletivo = $conexao->query("SELECT COUNT(*) FROM inscricoes_acampamento WHERE acomodacao='Alojamento coletivo - R$ 250,00 por pessoa'")->fetchColumn();
+$cont_barraca = $conexao->query("SELECT COUNT(*) FROM inscricoes_acampamento WHERE acomodacao='Barraca - R$ 250,00'")->fetchColumn();
+
+// vagas restantes:
+$rest_suite4 = $total_suite4 - $cont_suite4;
+$rest_suite3 = $total_suite3 - $cont_suite3;
+$rest_coletivo = $total_coletivo - $cont_coletivo;
+
+// evitar negativos
+$rest_suite4 = max(0, $rest_suite4);
+$rest_suite3 = max(0, $rest_suite3);
+$rest_coletivo = max(0, $rest_coletivo);
+
+
+// ========================= CONSULTA TABELA =========================
 $filtro_id = $_GET['id'] ?? '';
 $filtro_nome = $_GET['nome'] ?? '';
 
@@ -93,11 +140,70 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container mt-5 mb-5">
     <div class="card shadow">
         <div class="card-body">
+
             <a href="../index.php" class="btn btn-secondary mb-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
 
-            <h3 class="card-title mb-4 text-center">Gerenciar Inscrições do Acampamento</h3>
+            <h3 class="card-title mb-4 text-center fw-bold">Gerenciar Inscrições do Acampamento</h3>
+
+            <!-- ========================= CARDS ========================= -->
+            <div class="row text-center mb-4">
+
+                <!-- Suíte 4 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card border-primary shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Suíte 4 Leitos</h5>
+                            <p class="card-text">
+                                <b><?= $cont_suite4 ?></b> inscritos <br>
+                                <small class="text-muted">Vagas restantes: <?= $rest_suite4 ?></small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suíte 3 -->
+                <div class="col-md-3 mb-3">
+                    <div class="card border-success shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Suíte 3 Leitos</h5>
+                            <p class="card-text">
+                                <b><?= $cont_suite3 ?></b> inscritos <br>
+                                <small class="text-muted">Vagas restantes: <?= $rest_suite3 ?></small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coletivo -->
+                <div class="col-md-3 mb-3">
+                    <div class="card border-warning shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Alojamento Coletivo</h5>
+                            <p class="card-text">
+                                <b><?= $cont_coletivo ?></b> inscritos <br>
+                                <small class="text-muted">Vagas restantes: <?= $rest_coletivo ?></small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barracas -->
+                <div class="col-md-3 mb-3">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Barracas</h5>
+                            <p class="card-text">
+                                <b><?= $cont_barraca ?></b> pessoas cadastradas <br>
+                                <small class="text-muted">Sem limite</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- ======================= FIM CARDS ======================= -->
 
             <!-- Filtros -->
             <form method="GET" class="row g-3 align-items-end mb-3">
@@ -120,7 +226,7 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </form>
 
-            <!-- Formulário oculto para gerar CSV -->
+            <!-- Form oculto CSV -->
             <form method="POST" id="csvForm">
                 <input type="hidden" name="id" value="<?= htmlspecialchars($filtro_id) ?>">
                 <input type="hidden" name="nome" value="<?= htmlspecialchars($filtro_nome) ?>">
@@ -129,10 +235,6 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <!-- Tabela -->
             <div class="table-responsive">
-                <div class="alert alert-info text-center d-block d-md-none">
-                    Arraste para o lado para ver toda a tabela →
-                </div>
-
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark text-center">
                         <tr>
@@ -143,34 +245,83 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Telefone</th>
                             <th>Igreja</th>
                             <th>Acomodação</th>
+                            <th>Forma Pagamento</th>
+                            <th>Status Pagamento</th>
+                            <th>Responsável</th>
                             <th>Data Cad.</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         <?php if (count($cadastros) > 0): ?>
                             <?php foreach ($cadastros as $c): ?>
+
+                                <?php
+                                if (!empty($c['responsavel_id'])) {
+                                    $stmt_resp = $conexao->prepare("SELECT nome FROM inscricoes_acampamento WHERE id = ?");
+                                    $stmt_resp->execute([$c['responsavel_id']]);
+                                    $resp_nome = $stmt_resp->fetchColumn();
+                                } else {
+                                    $resp_nome = "É o responsável";
+                                }
+                                ?>
+
                                 <tr>
-                                    <td><?= htmlspecialchars($c['id']) ?></td>
+                                    <td><?= $c['id'] ?></td>
                                     <td><?= htmlspecialchars($c['nome']) ?></td>
                                     <td><?= htmlspecialchars($c['cpf']) ?></td>
                                     <td><?= date('d/m/Y', strtotime($c['data_nascimento'])) ?></td>
                                     <td><?= htmlspecialchars($c['telefone']) ?></td>
-                                    <td><?= htmlspecialchars($c['igreja']) ?></td>
+                                    <td><?= $c['responsavel_id'] ? "—" : htmlspecialchars($c['igreja']) ?></td>
                                     <td><?= htmlspecialchars($c['acomodacao']) ?></td>
+                                    <td><?= htmlspecialchars($c['forma_pagamento']) ?></td>
+
+                                    <td>
+                                        <select class="form-select status-pagamento" data-id="<?= $c['id'] ?>">
+                                            <option value="Pendente" <?= $c['status_pagamento']=='Pendente' ? 'selected' : '' ?>>Pendente</option>
+                                            <option value="Pago - PIX" <?= $c['status_pagamento']=='Pago - PIX' ? 'selected' : '' ?>>Pago - PIX</option>
+                                            <option value="Pago - Cartão" <?= $c['status_pagamento']=='Pago - Cartão' ? 'selected' : '' ?>>Pago - Cartão</option>
+                                        </select>
+                                    </td>
+
+                                    <td><?= htmlspecialchars($resp_nome) ?></td>
                                     <td><?= date('d/m/Y', strtotime($c['data_cadastro'])) ?></td>
                                 </tr>
+
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="text-center">Nenhuma inscrição encontrada.</td>
+                                <td colspan="11" class="text-center">Nenhuma inscrição encontrada.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
-                </table>
 
+                </table>
             </div>
+
         </div>
     </div>
 </div>
+
+<!-- AJAX PARA ATUALIZAR STATUS SEM RECARREGAR -->
+<script>
+document.querySelectorAll('.status-pagamento').forEach(select => {
+    select.addEventListener('change', function () {
+
+        let id = this.dataset.id;
+        let status = this.value;
+
+        let formData = new FormData();
+        formData.append("atualizar_status", "1");
+        formData.append("id", id);
+        formData.append("status", status);
+
+        fetch("", {
+            method: "POST",
+            body: formData
+        });
+    });
+});
+</script>
 
 <?php include '../cabecalho/footer_ad.php'; ?>
