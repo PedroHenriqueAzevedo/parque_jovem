@@ -104,16 +104,11 @@ body {
     background-attachment: fixed;
 }
 
-.card {
-    min-height: 170px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-body p {
-    margin: 0;
-    padding: 0;
+/* Card igual no desktop — sem quebrar mobile */
+@media (min-width: 768px) {
+    .card.card-acamp {
+        height: 195px !important;
+    }
 }
 </style>
 
@@ -124,42 +119,50 @@ include '../conexao/conexao.php';
 // ========================= CONTADORES =========================
 $total_suite4   = 16;
 $total_suite3   = 3;
-$total_coletivo = 73;
 
-// COLETA REAL DO BANCO
+$total_col_masc = 36;  // novas vagas
+$total_col_fem  = 37;  // novas vagas
+
 $cont_suite4 = $conexao->query("
     SELECT COUNT(*) FROM inscricoes_acampamento 
     WHERE responsavel_id IS NULL 
-    AND acomodacao='Suíte 4 leitos - R$ 2.000,00'
+    AND acomodacao LIKE 'Suíte 4 leitos%'
 ")->fetchColumn();
 
 $cont_suite3 = $conexao->query("
     SELECT COUNT(*) FROM inscricoes_acampamento 
     WHERE responsavel_id IS NULL 
-    AND acomodacao='Suíte 3 leitos - R$ 1.500,00'
+    AND acomodacao LIKE 'Suíte 3 leitos%'
 ")->fetchColumn();
 
-$cont_coletivo = $conexao->query("
+$cont_col_masc = $conexao->query("
     SELECT COUNT(*) FROM inscricoes_acampamento 
-    WHERE acomodacao='Alojamento coletivo - R$ 250,00 por pessoa'
+    WHERE responsavel_id IS NULL 
+    AND acomodacao LIKE 'Alojamento coletivo masculino%'
+")->fetchColumn();
+
+$cont_col_fem = $conexao->query("
+    SELECT COUNT(*) FROM inscricoes_acampamento 
+    WHERE responsavel_id IS NULL 
+    AND acomodacao LIKE 'Alojamento coletivo feminino%'
 ")->fetchColumn();
 
 $cont_barraca = $conexao->query("
     SELECT COUNT(*) FROM inscricoes_acampamento 
-    WHERE acomodacao='Barraca - R$ 250,00'
+    WHERE acomodacao LIKE 'Barraca%'
 ")->fetchColumn();
 
 $cont_dayuse = $conexao->query("
     SELECT COUNT(*) FROM inscricoes_acampamento 
-    WHERE acomodacao='Day Use - R$ 200,00'
+    WHERE acomodacao LIKE 'Day Use%'
 ")->fetchColumn();
 
-// RESTANTES
-$rest_suite4 = max(0, $total_suite4 - $cont_suite4);
-$rest_suite3 = max(0, $total_suite3 - $cont_suite3);
-$rest_coletivo = max(0, $total_coletivo - $cont_coletivo);
+$rest_suite4   = max(0, $total_suite4 - $cont_suite4);
+$rest_suite3   = max(0, $total_suite3 - $cont_suite3);
+$rest_col_masc = max(0, $total_col_masc - $cont_col_masc);
+$rest_col_fem  = max(0, $total_col_fem - $cont_col_fem);
 
-// ========================= CONSULTA TABELA =========================
+// ========================= CONSULTA =========================
 $filtro_id = $_GET['id'] ?? '';
 $filtro_nome = $_GET['nome'] ?? '';
 
@@ -176,28 +179,34 @@ if (!empty($filtro_nome)) {
 }
 
 $query .= " ORDER BY id ASC";
-
 $stmt = $conexao->prepare($query);
 $stmt->execute($params);
-
 $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 ?>
+
+<style>
+.status-pagamento {
+    min-width: 140px !important;
+    font-size: 15px !important;
+    padding: 6px !important;
+}
+</style>
 
 <div class="container mt-5 mb-5">
     <div class="card shadow">
         <div class="card-body">
 
-            <a href="../index.php" class="btn btn-secondary mb-2">
+            <a href="index.php" class="btn btn-secondary mb-2">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
 
             <h3 class="card-title mb-4 text-center fw-bold">Gerenciar Inscrições do Acampamento</h3>
 
-            <!-- ========================= CARDS AJUSTADOS ========================= -->
+            <!-- ========================= CARDS ========================= -->
             <div class="row text-center mb-4">
 
-                <div class="col-6 col-md-2 mb-3">
-                    <div class="card border-primary shadow-sm">
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-primary shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">Suíte 4 Leitos</h5>
                             <p><b><?= $cont_suite4 ?></b> inscritos</p>
@@ -206,8 +215,8 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                     </div>
                 </div>
 
-                <div class="col-6 col-md-2 mb-3">
-                    <div class="card border-success shadow-sm">
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-success shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">Suíte 3 Leitos</h5>
                             <p><b><?= $cont_suite3 ?></b> inscritos</p>
@@ -216,18 +225,30 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                     </div>
                 </div>
 
-                <div class="col-6 col-md-2 mb-3">
-                    <div class="card border-warning shadow-sm">
+                <!-- Coletivo Masculino -->
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-secondary shadow-sm">
                         <div class="card-body">
-                            <h5 class="card-title">Alojamento Coletivo</h5>
-                            <p><b><?= $cont_coletivo ?></b> inscritos</p>
-                            <small>Vagas restantes: <?= $rest_coletivo ?></small>
+                            <h5 class="card-title">Coletivo Masculino</h5>
+                            <p><b><?= $cont_col_masc ?></b> inscritos</p>
+                            <small>Vagas restantes: <?= $rest_col_masc ?></small>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-6 col-md-2 mb-3">
-                    <div class="card border-danger shadow-sm">
+                <!-- Coletivo Feminino -->
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-danger shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Coletivo Feminino</h5>
+                            <p><b><?= $cont_col_fem ?></b> inscritos</p>
+                            <small>Vagas restantes: <?= $rest_col_fem ?></small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-danger shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">Barracas</h5>
                             <p><b><?= $cont_barraca ?></b> inscritos</p>
@@ -236,8 +257,8 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                     </div>
                 </div>
 
-                <div class="col-6 col-md-2 mb-3">
-                    <div class="card border-info shadow-sm">
+                <div class="col-12 col-md-2 mb-3">
+                    <div class="card card-acamp border-info shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">Day Use</h5>
                             <p><b><?= $cont_dayuse ?></b> inscritos</p>
@@ -248,7 +269,7 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
             </div>
 
-            <!-- Filtros -->
+            <!-- ========================= FILTROS ========================= -->
             <form method="GET" class="row g-3 align-items-end mb-3">
                 <div class="col-md-2">
                     <input type="number" name="id" class="form-control" placeholder="Filtrar por ID"
@@ -274,7 +295,7 @@ $cadastros = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
                 <input type="hidden" name="gerar_csv" value="1">
             </form>
 
-            <!-- Tabela -->
+            <!-- ========================= TABELA ========================= -->
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-dark text-center">

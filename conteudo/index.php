@@ -14,8 +14,7 @@ $acomodacoes = [];
 // corrigir contagem REAL somente pelos responsáveis
 foreach ($acomodacoesRaw as $a) {
 
-    // preço não importa — buscamos por prefixo
-    $prefixo = $a['nome'];
+    $prefixo = $a['nome']; // busca por prefixo exato
 
     $stmt = $conexao->prepare("
         SELECT COUNT(*) FROM inscricoes_acampamento
@@ -26,7 +25,7 @@ foreach ($acomodacoesRaw as $a) {
 
     $usadoReal = $stmt->fetchColumn();
 
-    $a['usado'] = $usadoReal; // sobrescreve com valor correto
+    $a['usado'] = $usadoReal;
 
     $acomodacoes[$a['nome']] = $a;
 }
@@ -35,19 +34,20 @@ function vagasRestantes($ac) {
     return max(0, $ac['limite'] - $ac['usado']);
 }
 
-// Criar mapa para facilitar o uso
+// Criar mapa
 $map = [];
 foreach ($acomodacoes as $a) {
-    $map[$a['nome']] = $a; 
+    $map[$a['nome']] = $a;
 }
 
-// MAPEAMENTO PARA SALVAR COM PREÇO (OPÇÃO B)
+// ============================ PREÇOS ==============================
 $precos = [
-    'Suíte 4 leitos'        => 'Suíte 4 leitos - R$ 2.000,00',
-    'Suíte 3 leitos'        => 'Suíte 3 leitos - R$ 1.500,00',
-    'Alojamento Coletivo'   => 'Alojamento coletivo - R$ 250,00 por pessoa',
-    'Barraca'               => 'Barraca - R$ 250,00',
-    'Day Use'               => 'Day Use - R$ 200,00', // NOVO
+    'Suíte 4 leitos'                     => 'Suíte 4 leitos - R$ 2.000,00',
+    'Suíte 3 leitos'                     => 'Suíte 3 leitos - R$ 1.500,00',
+    'Alojamento Coletivo Masculino'      => 'Alojamento coletivo masculino - R$ 250,00 por pessoa',
+    'Alojamento Coletivo Feminino'       => 'Alojamento coletivo feminino - R$ 250,00 por pessoa',
+    'Barraca'                            => 'Barraca - R$ 250,00',
+    'Day Use'                            => 'Day Use - R$ 200,00'
 ];
 
 $mensagem = '';
@@ -66,66 +66,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $acomodacao_raw = $_POST['acomodacao'] ?? '';
     $forma_pagamento = $_POST['forma_pagamento'] ?? '';
 
-    // Transformar na versão "nome + preço"
     $acomodacao = $precos[$acomodacao_raw] ?? '';
 
-    // Arrays acompanhantes
+    // acompanhantes
     $acomp_nomes = $_POST['acomp_nome'] ?? [];
-    $acomp_cpfs = $_POST['acomp_cpf'] ?? [];
+    $acomp_cpfs  = $_POST['acomp_cpf'] ?? [];
     $acomp_datas = $_POST['acomp_data_nascimento'] ?? [];
-    $acomp_tels = $_POST['acomp_telefone'] ?? [];
+    $acomp_tels  = $_POST['acomp_telefone'] ?? [];
 
-    // Quantidade obrigatória
+    // quantidade obrigatória
     $qtd_acomp_obrig = 0;
 
     if ($acomodacao_raw === 'Suíte 3 leitos') $qtd_acomp_obrig = 2;
     if ($acomodacao_raw === 'Suíte 4 leitos') $qtd_acomp_obrig = 3;
 
-    // Day Use NÃO TEM ACOMPANHANTES
     if ($acomodacao_raw === 'Day Use') $qtd_acomp_obrig = 0;
 
-    // ----------------- VALIDAÇÃO BÁSICA ------------------
-    if (
-        empty($nome) || empty($cpf) || empty($data_nascimento) ||
+    if (empty($nome) || empty($cpf) || empty($data_nascimento) ||
         empty($telefone) || empty($igreja) || empty($acomodacao) ||
-        empty($forma_pagamento)
-    ) {
+        empty($forma_pagamento)) {
+
         $mensagem = "<div class='alert alert-danger text-center'>Preencha todos os campos obrigatórios.</div>";
+
     } else {
 
-        // ---------- VALIDAR VAGAS PARA TUDO EXCETO DAY USE ----------
+        // Verificar vagas (DayUse não verifica)
         if ($acomodacao_raw !== 'Day Use') {
             if (vagasRestantes($map[$acomodacao_raw]) <= 0) {
                 $mensagem = "<div class='alert alert-danger text-center'>As vagas para esta acomodação acabaram!</div>";
             }
         }
 
-        if ($mensagem === '') {
-
-            // ---------- Validar acompanhantes ----------
-            if ($qtd_acomp_obrig > 0) {
-                for ($i = 0; $i < $qtd_acomp_obrig; $i++) {
-                    if (
-                        empty($acomp_nomes[$i]) ||
-                        empty($acomp_cpfs[$i]) ||
-                        empty($acomp_datas[$i]) ||
-                        empty($acomp_tels[$i])
-                    ) {
-                        $mensagem = "<div class='alert alert-danger text-center'>
-                            Preencha todos os dados dos acompanhantes.
-                        </div>";
-                        break;
-                    }
+        // Validar acompanhantes obrigatórios
+        if ($mensagem === '' && $qtd_acomp_obrig > 0) {
+            for ($i = 0; $i < $qtd_acomp_obrig; $i++) {
+                if (
+                    empty($acomp_nomes[$i]) ||
+                    empty($acomp_cpfs[$i]) ||
+                    empty($acomp_datas[$i]) ||
+                    empty($acomp_tels[$i])
+                ) {
+                    $mensagem = "<div class='alert alert-danger text-center'>Preencha todos os dados dos acompanhantes.</div>";
+                    break;
                 }
             }
         }
 
+        // Validar duplicidade
         if ($mensagem === '') {
 
-            // ---------- Validar duplicidade banco ----------
             $todosNomes = array_merge([$nome], array_slice($acomp_nomes, 0, $qtd_acomp_obrig));
-            $todosCpfs = array_merge([$cpf], array_slice($acomp_cpfs, 0, $qtd_acomp_obrig));
-            $todosTels = array_merge([$telefone], array_slice($acomp_tels, 0, $qtd_acomp_obrig));
+            $todosCpfs  = array_merge([$cpf], array_slice($acomp_cpfs,  0, $qtd_acomp_obrig));
+            $todosTels  = array_merge([$telefone], array_slice($acomp_tels, 0, $qtd_acomp_obrig));
 
             $phN = implode(',', array_fill(0, count($todosNomes), '?'));
             $phC = implode(',', array_fill(0, count($todosCpfs), '?'));
@@ -146,14 +138,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mensagem = "<div class='alert alert-danger text-center'>Já existe uma inscrição com estes dados.</div>";
             } else {
 
-                // ==========================================================
-                // SALVAR NO BANCO
-                // ==========================================================
+                // SALVAR
                 try {
                     $conexao->beginTransaction();
                     $data_cadastro = date('Y-m-d H:i:s');
 
-                    // Salvar responsável
+                    // responsável
                     $stmt = $conexao->prepare("
                         INSERT INTO inscricoes_acampamento
                         (responsavel_id, nome, cpf, data_nascimento, telefone, igreja, acomodacao, forma_pagamento, data_cadastro)
@@ -163,13 +153,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     $idResp = $conexao->lastInsertId();
 
-                    // Salvar acompanhantes
+                    // acompanhantes
                     if ($qtd_acomp_obrig > 0) {
                         $stmtA = $conexao->prepare("
                             INSERT INTO inscricoes_acampamento
                             (responsavel_id, nome, cpf, data_nascimento, telefone, igreja, acomodacao, forma_pagamento, data_cadastro)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                         ");
+
                         for ($i = 0; $i < $qtd_acomp_obrig; $i++) {
                             $stmtA->execute([
                                 $idResp,
@@ -185,16 +176,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         }
                     }
 
-                    // Atualizar contagem (NÃO ATUALIZA se for Day Use)
+                    // atualizar usado
                     if ($acomodacao_raw !== 'Day Use') {
-                        $conexao->prepare("UPDATE acomodacoes SET usado = usado + 1 WHERE nome = ?")
-                                ->execute([$acomodacao_raw]);
+                        $conexao->prepare("
+                            UPDATE acomodacoes SET usado = usado + 1 
+                            WHERE nome = ?
+                        ")->execute([$acomodacao_raw]);
                     }
 
                     $conexao->commit();
 
                     $sucesso = true;
-                    $mensagem = "<div class='alert alert-success text-center fw-bold'>Inscrição realizada com sucesso!</div>";
+                    $mensagem = "<div class='alert alert-success text-center fw-bold'>
+                        Inscrição realizada com sucesso! A organização entrará em contato.
+                    </div>";
 
                 } catch (Exception $e) {
                     $conexao->rollBack();
@@ -206,7 +201,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!-- Bootstrap (caso falhe no header) -->
+<!-- BOOTSTRAP FALLBACK -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -235,7 +230,7 @@ body {
 
 <form method="POST">
 
-    <!-- DADOS RESPONSÁVEL -->
+    <!-- RESPONSÁVEL -->
     <div class="mb-3">
         <label class="form-label fw-semibold">Nome completo:</label>
         <input type="text" name="nome" class="form-control" required>
@@ -243,7 +238,7 @@ body {
 
     <div class="mb-3">
         <label class="form-label fw-semibold">CPF:</label>
-        <input type="text" name="cpf" id="cpf" class="form-control" required maxlength="14">
+        <input type="text" name="cpf" id="cpf" class="form-control" maxlength="14" required>
     </div>
 
     <div class="mb-3">
@@ -253,7 +248,7 @@ body {
 
     <div class="mb-3">
         <label class="form-label fw-semibold">Telefone:</label>
-        <input type="text" name="telefone" id="telefone" class="form-control" required maxlength="15">
+        <input type="text" name="telefone" id="telefone" class="form-control" maxlength="15" required>
     </div>
 
     <div class="mb-3">
@@ -281,9 +276,10 @@ body {
     <hr>
     <h5 class="fw-bold text-center">Escolha sua Acomodação</h5>
 
-    <div class="alert alert-info text-center">⚠️ Apenas 1 opção permitida.</div>
+    <div class="alert alert-info text-center">⚠️ Escolha apenas uma opção.</div>
 
-    <h6 class="fw-bold mt-3">Apartamentos</h6>
+    <!-- SUÍTES -->
+    <h6 class="fw-bold mt-3">Apartamentos (Ar Condicionado)</h6>
 
     <?php if (vagasRestantes($map['Suíte 4 leitos']) > 0): ?>
     <div class="form-check">
@@ -307,33 +303,52 @@ body {
     </div>
     <?php endif; ?>
 
-    <h6 class="fw-bold mt-3">Alojamento Coletivo</h6>
+    <!-- ALOJAMENTO COLETIVO MASCULINO -->
+    <h6 class="fw-bold mt-3">Alojamento coletivo masculino</h6>
 
-    <?php if (vagasRestantes($map['Alojamento Coletivo']) > 0): ?>
+    <?php if (vagasRestantes($map['Alojamento Coletivo Masculino']) > 0): ?>
     <div class="form-check">
         <input class="form-check-input" type="radio" name="acomodacao"
-               value="Alojamento Coletivo">
+               value="Alojamento Coletivo Masculino">
         <label class="form-check-label">
-            Alojamento coletivo — R$ 250,00 por pessoa
-            (<?= vagasRestantes($map['Alojamento Coletivo']) ?> vagas seguintes)
+            Alojamento coletivo masculino — R$ 250,00 por pessoa
+            (<?= vagasRestantes($map['Alojamento Coletivo Masculino']) ?> vagas restantes)
         </label>
     </div>
     <?php endif; ?>
 
+    <!-- ALOJAMENTO COLETIVO FEMININO -->
+    <h6 class="fw-bold mt-3">Alojamento coletivo feminino</h6>
+
+    <?php if (vagasRestantes($map['Alojamento Coletivo Feminino']) > 0): ?>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="acomodacao"
+               value="Alojamento Coletivo Feminino">
+        <label class="form-check-label">
+            Alojamento coletivo feminino — R$ 250,00 por pessoa
+            (<?= vagasRestantes($map['Alojamento Coletivo Feminino']) ?> vagas restantes)
+        </label>
+    </div>
+    <?php endif; ?>
+
+    <!-- BARRACA -->
     <h6 class="fw-bold mt-3">Barracas</h6>
-    <div class="form-check mb-4">
+    <div class="form-check">
         <input class="form-check-input" type="radio" name="acomodacao" value="Barraca">
         <label class="form-check-label">
             Espaço para barraca — R$ 250,00 (ilimitado)
         </label>
     </div>
 
+    <!-- DAY USE -->
     <h6 class="fw-bold mt-3">Day Use</h6>
     <div class="form-check mb-4">
         <input class="form-check-input" type="radio" name="acomodacao" value="Day Use">
         <label class="form-check-label">
-            Day Use — R$ 200,00  
-            <br><small class="text-muted">Para pessoas que NÃO vão dormir no local, apenas permanecer durante o dia.</small>
+            Day Use — R$ 200,00
+            <br><small class="text-muted">
+                Para quem NÃO vai dormir no local, apenas passar o dia.
+            </small>
         </label>
     </div>
 
@@ -344,11 +359,13 @@ body {
         <?php for ($i = 1; $i <= 3; $i++): ?>
         <div class="border rounded p-3 mb-3 bloco-acompanhante">
             <h6 class="fw-bold">Pessoa <?= $i+1 ?></h6>
+
             <input type="text" name="acomp_nome[]" class="form-control mb-2" placeholder="Nome completo">
-            <input type="text" name="acomp_cpf[]" class="form-control mb-2 acomp_cpf" placeholder="CPF">
+
+            <input type="text" name="acomp_cpf[]" class="form-control acomp_cpf mb-2" placeholder="CPF">
+
             <input type="date" name="acomp_data_nascimento[]" class="form-control mb-2">
-            
-            <!-- TELEFONE DO ACOMPANHANTE (com máscara) -->
+
             <input type="text" name="acomp_telefone[]" class="form-control acomp_tel mb-2" placeholder="Telefone" maxlength="15">
         </div>
         <?php endfor; ?>
@@ -381,7 +398,7 @@ body {
 </div>
 
 <script>
-// Máscara CPF do responsável
+// máscara CPF responsável
 document.getElementById('cpf').addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g, '');
     v = v.replace(/(\d{3})(\d)/, '$1.$2')
@@ -390,17 +407,17 @@ document.getElementById('cpf').addEventListener('input', e => {
     e.target.value = v.substring(0, 14);
 });
 
-// Máscara telefone do responsável
+// máscara telefone responsável
 document.getElementById('telefone').addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g, '');
     if (v.length <= 10)
         v = v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
     else
         v = v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-    e.target.value = v;
+    e.target.value = v.substring(0, 15);
 });
 
-// Máscara CPF dos acompanhantes
+// máscara CPF acompanhantes
 document.querySelectorAll('.acomp_cpf').forEach(input => {
     input.addEventListener('input', e => {
         let v = e.target.value.replace(/\D/g, '');
@@ -411,7 +428,7 @@ document.querySelectorAll('.acomp_cpf').forEach(input => {
     });
 });
 
-// Máscara telefone acompanhantes
+// máscara telefone acompanhantes
 document.querySelectorAll('.acomp_tel').forEach(input => {
     input.addEventListener('input', e => {
         let v = e.target.value.replace(/\D/g, '');
@@ -423,7 +440,7 @@ document.querySelectorAll('.acomp_tel').forEach(input => {
     });
 });
 
-// Lógica acompanhantes
+// lógica acompanhantes
 function atualizarAcompanhantes() {
     let escolha = document.querySelector('input[name="acomodacao"]:checked');
     let qtd = 0;
@@ -433,8 +450,9 @@ function atualizarAcompanhantes() {
     if (escolha.value === 'Suíte 3 leitos') qtd = 2;
     if (escolha.value === 'Suíte 4 leitos') qtd = 3;
 
-    // Day Use NÃO PODE TER acompanhantes
     if (escolha.value === 'Day Use') qtd = 0;
+    if (escolha.value === 'Alojamento Coletivo Masculino') qtd = 0;
+    if (escolha.value === 'Alojamento Coletivo Feminino') qtd = 0;
 
     const container = document.getElementById('acompanhantes-container');
     const blocos = document.querySelectorAll('.bloco-acompanhante');

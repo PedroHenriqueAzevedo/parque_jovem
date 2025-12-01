@@ -107,3 +107,8 @@ UPDATE acomodacoes SET usado = (
 );
 INSERT INTO acomodacoes (nome, limite, usado) 
 VALUES ('Day Use', 9999, 0);
+DELETE FROM acomodacoes WHERE nome = 'Alojamento Coletivo';
+
+INSERT INTO acomodacoes (nome, limite, usado) VALUES
+('Alojamento Coletivo Masculino', 36, 0),
+('Alojamento Coletivo Feminino', 37, 0);
